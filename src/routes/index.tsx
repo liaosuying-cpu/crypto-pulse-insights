@@ -110,11 +110,11 @@ function TopBar() {
 
 function UserCenterSheet() {
   const primaryActions = [
-    { label: "登录 / 注册", desc: "同步自选与指标偏好", to: "/login" as const, icon: "↗" },
+    { label: "登录 / 注册", desc: "管理账户与订阅状态", to: "/login" as const, icon: "↗" },
     { label: "订阅付费", desc: "解锁完整数据库与 AI 报告", to: "/pricing" as const, icon: "◆" },
-    { label: "个人中心", desc: "账户、通知与数据导出", to: "/account" as const, icon: "◎" },
+    { label: "数据导出", desc: "导出币种、指标与报告数据", to: "/export" as const, icon: "⇩" },
+    { label: "安全与隐私", desc: "登录安全、隐私权限与数据管理", to: "/privacy" as const, icon: "◎" },
   ];
-  const quickItems = ["自选同步", "价格预警", "报告推送", "帮助中心"];
 
   return (
     <Sheet>
@@ -149,10 +149,6 @@ function UserCenterSheet() {
               </Link>
             ))}
           </nav>
-
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            {quickItems.map((item) => <button key={item} className="h-12 rounded-2xl border border-panel-border bg-elevated text-sm font-bold text-muted-foreground">{item}</button>)}
-          </div>
 
           <div className="mt-auto border-t border-panel-border pt-5 text-xs font-bold text-muted-foreground">
             CryptOracle · 加密社群情绪数据库
