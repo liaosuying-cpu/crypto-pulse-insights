@@ -161,8 +161,50 @@
     border-color: var(--color-border);
   }
 
+  html {
+    background-color: var(--color-background);
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+    overflow-x: hidden;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .thin-scrollbar::-webkit-scrollbar {
+    height: 0.45rem;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--color-primary);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pulse-glow {
+      animation: pulse-glow 3.8s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 oklch(0.66 0.22 286 / 0.18);
+  }
+  50% {
+    box-shadow: 0 0 38px 0 oklch(0.66 0.22 286 / 0.26);
   }
 }
