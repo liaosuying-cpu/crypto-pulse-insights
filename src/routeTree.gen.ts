@@ -9,9 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoinSymbolRouteImport } from './routes/coin.$symbol'
 
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -25,32 +43,65 @@ const CoinSymbolRoute = CoinSymbolRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/coin/$symbol': typeof CoinSymbolRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/coin/$symbol': typeof CoinSymbolRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/coin/$symbol': typeof CoinSymbolRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/coin/$symbol'
+  fullPaths: '/' | '/account' | '/login' | '/pricing' | '/coin/$symbol'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/coin/$symbol'
-  id: '__root__' | '/' | '/coin/$symbol'
+  to: '/' | '/account' | '/login' | '/pricing' | '/coin/$symbol'
+  id: '__root__' | '/' | '/account' | '/login' | '/pricing' | '/coin/$symbol'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  LoginRoute: typeof LoginRoute
+  PricingRoute: typeof PricingRoute
   CoinSymbolRoute: typeof CoinSymbolRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -70,6 +121,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  LoginRoute: LoginRoute,
+  PricingRoute: PricingRoute,
   CoinSymbolRoute: CoinSymbolRoute,
 }
 export const routeTree = rootRouteImport
