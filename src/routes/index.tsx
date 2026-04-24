@@ -6,55 +6,85 @@ export const Route = createFileRoute("/")({
       { title: "CryptOracle 加密市场数据库" },
       {
         name: "description",
-        content: "加密社群情绪数据移动端仪表盘，覆盖行情、自选、AI 洞察与单币种分析。",
+        content: "黑紫专业移动端加密市场数据库，展示 CO10 AIVIX、社群情绪、KOL 讨论与 AI 洞察。",
       },
       { property: "og:title", content: "CryptOracle 加密市场数据库" },
       {
         property: "og:description",
-        content: "用社群情绪、KOL 热度与市场数据辅助加密量化决策。",
+        content: "用加密社群情绪数据辅助量化决策。",
       },
     ],
   }),
   component: Index,
 });
 
-const coins = [
-  { rank: 1, symbol: "BTC", name: "Bitcoin", price: "$77,970", heat: "98.7", kol: "915", popular: "17,571", change: "+2.34%", tone: "up", color: "bg-warning" },
-  { rank: 2, symbol: "ETH", name: "Ethereum", price: "$3,521", heat: "94.2", kol: "842", popular: "15,230", change: "-1.28%", tone: "down", color: "bg-blue-500" },
-  { rank: 3, symbol: "SOL", name: "Solana", price: "$178.5", heat: "89.5", kol: "756", popular: "12,890", change: "+5.67%", tone: "up", color: "bg-primary" },
-  { rank: 4, symbol: "BNB", name: "BNB", price: "$612", heat: "82.1", kol: "534", popular: "9,876", change: "-5.67%", tone: "down", color: "bg-yellow-400" },
-  { rank: 5, symbol: "XRP", name: "Ripple", price: "$0.62", heat: "76.8", kol: "423", popular: "7,654", change: "+12.11%", tone: "up", color: "bg-slate-600" },
+type Coin = {
+  rank: number;
+  symbol: string;
+  name: string;
+  price: string;
+  heat: string;
+  momentum: string;
+  mentions: string;
+  kol24: string;
+  kol7: string;
+  popular24: string;
+  popular7: string;
+  communities24: string;
+  communities7: string;
+  change: string;
+  tone: "up" | "down";
+  avatar: "primary" | "signal" | "warning" | "positive" | "negative" | "secondary";
+};
+
+const coins: Coin[] = [
+  { rank: 1, symbol: "BTC", name: "Bitcoin", price: "$77,970", heat: "98.7", momentum: "92.1", mentions: "184K", kol24: "915", kol7: "1,198", popular24: "17,571", popular7: "133,219", communities24: "1,080", communities7: "1,457", change: "+2.34%", tone: "up", avatar: "warning" },
+  { rank: 2, symbol: "ETH", name: "Ethereum", price: "$3,521", heat: "94.2", momentum: "88.4", mentions: "142K", kol24: "842", kol7: "1,054", popular24: "15,230", popular7: "118,400", communities24: "956", communities7: "1,214", change: "-1.28%", tone: "down", avatar: "signal" },
+  { rank: 3, symbol: "SOL", name: "Solana", price: "$178.5", heat: "89.5", momentum: "86.9", mentions: "121K", kol24: "756", kol7: "944", popular24: "12,890", popular7: "94,101", communities24: "811", communities7: "1,009", change: "+5.67%", tone: "up", avatar: "primary" },
+  { rank: 4, symbol: "BNB", name: "BNB", price: "$612", heat: "82.1", momentum: "74.6", mentions: "78K", kol24: "534", kol7: "690", popular24: "9,876", popular7: "71,042", communities24: "632", communities7: "804", change: "-5.67%", tone: "down", avatar: "secondary" },
+  { rank: 5, symbol: "XRP", name: "Ripple", price: "$0.62", heat: "76.8", momentum: "71.3", mentions: "65K", kol24: "423", kol7: "588", popular24: "7,654", popular7: "60,820", communities24: "501", communities7: "755", change: "+12.11%", tone: "up", avatar: "positive" },
 ];
 
 const latest = [
-  { symbol: "WIF", price: "$2.85", change: "+12.45%", color: "bg-orange-600" },
-  { symbol: "JUP", price: "$1.23", change: "-3.21%", color: "bg-emerald-400" },
-  { symbol: "STRK", price: "$1.87", change: "+8.92%", color: "bg-red-400" },
+  { rank: 1, symbol: "WIF", name: "dogwifhat", price: "$2.85", change: "+12.45%", tone: "up" as const, avatar: "negative" as const },
+  { rank: 2, symbol: "JUP", name: "Jupiter", price: "$1.23", change: "-3.21%", tone: "down" as const, avatar: "positive" as const },
+  { rank: 3, symbol: "STRK", name: "Starknet", price: "$1.87", change: "+8.92%", tone: "up" as const, avatar: "primary" as const },
+];
+
+const kolRows = [
+  { rank: 1, name: "Arthur", followers: "1.2M", heat: "98.4", coins: "BTC / ETH", trend: "+18.2%", tone: "up" as const },
+  { rank: 2, name: "CL207", followers: "846K", heat: "93.1", coins: "SOL / JUP", trend: "+11.6%", tone: "up" as const },
+  { rank: 3, name: "CryptoNova", followers: "612K", heat: "88.7", coins: "BNB / XRP", trend: "-6.4%", tone: "down" as const },
+  { rank: 4, name: "ChainLens", followers: "508K", heat: "84.0", coins: "ETH / STRK", trend: "+4.9%", tone: "up" as const },
+  { rank: 5, name: "MKT Pulse", followers: "476K", heat: "79.5", coins: "BTC / WIF", trend: "-3.7%", tone: "down" as const },
 ];
 
 const articles = [
-  ["BTC 突破 78K：牛市延续还是短期反弹？", "CryptInsight", "2小时前"],
-  ["DeFi 锁仓量创新高的背后逻辑", "DeFiPulse", "4小时前"],
-  ["Layer2 竞争格局深度解析", "ChainScope", "6小时前"],
+  ["观点", "社交恐慌回落后，BTC 波动率正在重新定价", "CO Research", "2小时前"],
+  ["案例", "SOL 生态热度反转如何领先价格 36 小时", "Alpha Desk", "4小时前"],
+  ["观点", "KOL 分歧扩大：Layer2 交易拥挤度的量化信号", "ChainScope", "6小时前"],
 ];
 
 function Index() {
   return (
     <main className="mx-auto min-h-screen max-w-[430px] bg-background pb-28 text-foreground shadow-2xl">
-      <TopBar title="CryptOracle" />
-      <div className="px-5 pt-36">
-        <h1 className="mb-6 text-3xl font-black tracking-normal">加密市场数据库</h1>
-        <section id="market" className="scroll-mt-36 space-y-6">
+      <TopBar />
+      <div className="px-4 pt-28">
+        <h1 className="sr-only">CryptOracle 加密市场数据库</h1>
+        <section id="market" className="scroll-mt-32 space-y-5">
           <NewsTicker />
-          <IndexCard />
-          <MarketRanks />
+          <AivixChart />
+          <MarketRankTable />
+          <KolDiscussionTable />
         </section>
-        <section id="watchlist" className="mt-8 scroll-mt-36 space-y-6">
+        <section id="coins" className="mt-8 scroll-mt-32 space-y-5">
+          <CoinOverview />
           <WatchlistTable />
           <FooterBrand />
         </section>
-        <section id="insight" className="mt-8 scroll-mt-36 space-y-6">
-          <InsightPanel />
+        <section id="insight" className="mt-8 scroll-mt-32 space-y-5">
+          <AiReport />
+          <InsightMetrics />
           <ArticleList />
         </section>
       </div>
@@ -63,140 +93,179 @@ function Index() {
   );
 }
 
-function TopBar({ title }: { title: string }) {
+function TopBar() {
   return (
-    <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-5 pb-4 pt-6 backdrop-blur-xl">
+    <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-4 pb-4 pt-5 backdrop-blur-xl">
       <div className="flex items-center gap-3">
-        <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-accent text-2xl font-black shadow-glow">A</div>
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-elevated ring-2 ring-primary/70 shadow-glow">
+          <span className="text-lg font-black text-primary">A</span>
+        </div>
         <label className="flex h-12 flex-1 items-center gap-2 rounded-full border border-panel-border bg-elevated px-4 text-muted-foreground focus-within:border-primary">
           <SearchIcon />
           <input className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" placeholder="搜索币种 / 指标 / KOL" />
         </label>
-        <button className="relative grid h-12 w-12 place-items-center rounded-full border border-panel-border bg-elevated text-muted-foreground transition hover:scale-105 hover:text-foreground" aria-label="通知">
-          <BellIcon />
-          <span className="absolute right-2 top-2 h-3 w-3 rounded-full bg-negative" />
-        </button>
       </div>
-      <p className="mt-4 text-sm text-muted-foreground">Alex，欢迎回来 👋</p>
-      <div className="mt-3 text-2xl font-black">{title}</div>
     </header>
   );
 }
 
 function NewsTicker() {
+  const news = ["BTC 突破 78,000，CO10 AIVIX 15m 上行", "SOL 社区提及量 24h +28.4%", "KOL 多空分歧指数升至 0.71"];
   return (
-    <div className="flex items-center gap-3 overflow-hidden rounded-2xl border border-panel-border bg-panel px-4 py-3 shadow-panel">
-      <span className="h-2.5 w-2.5 rounded-full bg-orange-500" />
-      <strong className="text-warning">快讯</strong>
-      <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground">BTC 突破 78,000 关口，市场情绪高涨</p>
-      <span className="text-sm text-muted-foreground">2分钟前</span>
+    <div className="overflow-hidden rounded-2xl border border-panel-border bg-panel py-3 shadow-panel">
+      <div className="flex items-center gap-3 px-4">
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-primary pulse-glow" />
+        <strong className="shrink-0 text-primary">资讯</strong>
+        <div className="thin-scrollbar flex min-w-0 flex-1 gap-5 overflow-x-auto text-sm text-muted-foreground">
+          {news.map((item) => <span key={item} className="shrink-0">{item}</span>)}
+        </div>
+      </div>
     </div>
   );
 }
 
-function IndexCard() {
-  const bars = [64, 70, 66, 58, 36, 28, 22, 20, 32, 54, 66, 72, 68, 64, 46, 34, 26, 30, 42, 58, 68, 66, 50, 36, 34];
-  return (
-    <article className="pulse-glow rounded-3xl border border-panel-border bg-panel p-6 shadow-panel">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-black">CO10 AIVIX</h2>
-        <div className="flex gap-3 text-sm text-muted-foreground"><span>— AIVIX</span><span className="text-primary">■ Social</span><span className="text-signal">— CO10</span></div>
-      </div>
-      <div className="mb-5 flex items-center gap-4 text-lg font-bold text-muted-foreground"><span>15m</span><span>30m</span><span>1h</span><span>4h</span><span className="rounded-xl bg-primary px-4 py-2 text-primary-foreground">1d</span><span>7d</span></div>
-      <div className="flex h-44 items-end gap-1.5 overflow-hidden">
-        {bars.map((height, index) => <div key={index} className="w-full rounded-t bg-primary/75" style={{ height: `${height}%` }} />)}
-      </div>
-      <Sparkline className="mt-4 h-20 w-full text-signal" variant="wave" />
-    </article>
-  );
-}
-
-function MarketRanks() {
+function AivixChart() {
+  const bars = [52, 66, 58, 72, 84, 64, 48, 40, 34, 42, 61, 78, 88, 73, 69, 55, 47, 60, 77, 81, 67, 58];
   return (
     <section className="rounded-3xl border border-panel-border bg-panel p-5 shadow-panel">
-      <div className="mb-4 flex items-center justify-between"><h2 className="text-2xl font-black"><span className="mr-2 text-primary">•</span>币种排行</h2><a className="text-primary" href="#watchlist">更多 →</a></div>
-      <div className="grid grid-cols-2 gap-4">
-        <MiniRank title="热门币种" data={coins.slice(0, 3)} />
-        <MiniRank title="最新上线" data={latest} />
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-black">CO10 AIVIX</h2>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            <span><i className="mr-1 inline-block h-0.5 w-5 align-middle bg-foreground" />CO10 AIVIX</span>
+            <span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-primary" />CO10 Social Volume Index</span>
+            <span><i className="mr-1 inline-block h-0.5 w-5 align-middle bg-signal" />CO10 index</span>
+          </div>
+        </div>
+      </div>
+      <TimeSelector />
+      <div className="thin-scrollbar overflow-x-auto pb-1">
+        <div className="w-[620px]">
+          <div className="relative h-48 border-b border-panel-border/80">
+            <div className="absolute inset-x-0 bottom-0 flex h-36 items-end gap-2 px-1">
+              {bars.map((height, index) => <div key={index} className="w-5 rounded-t bg-primary/70" style={{ height: `${height}%` }} />)}
+            </div>
+            <svg className="absolute inset-0 h-full w-full text-foreground" viewBox="0 0 620 190" fill="none">
+              <path d="M0 116 C34 82 54 152 91 92 S151 45 192 96 268 146 318 82 396 48 448 76 532 136 620 54" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+            </svg>
+          </div>
+          <div className="h-28 pt-3">
+            <svg className="h-full w-full text-signal" viewBox="0 0 620 100" fill="none">
+              <path d="M0 70 C44 24 82 78 126 45 S206 28 258 55 334 88 388 50 498 18 620 38" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+              <path d="M0 70 C44 24 82 78 126 45 S206 28 258 55 334 88 388 50 498 18 620 38" stroke="currentColor" strokeOpacity="0.15" strokeWidth="16" strokeLinecap="round" />
+            </svg>
+          </div>
+          <div className="flex justify-between px-1 text-xs text-muted-foreground"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+        </div>
       </div>
     </section>
   );
 }
 
-function MiniRank({ title, data }: { title: string; data: Array<{ symbol: string; price: string; change: string; color: string }> }) {
+function TimeSelector() {
+  return <div className="mb-4 flex gap-2 overflow-x-auto text-sm font-bold text-muted-foreground">{["15m", "30m", "1h", "4h", "1d", "7d"].map((t) => <button key={t} className={t === "1d" ? "rounded-lg bg-primary px-3 py-1.5 text-primary-foreground" : "rounded-lg border border-panel-border px-3 py-1.5"}>{t}</button>)}</div>;
+}
+
+function MarketRankTable() {
   return (
-    <div className="rounded-2xl border border-panel-border bg-background/45 p-4">
-      <h3 className="mb-3 text-lg font-black"><span className="mr-2 text-positive">•</span>{title}</h3>
-      <div className="space-y-4">{data.map((coin, index) => <CoinLink key={coin.symbol} symbol={coin.symbol} className="grid grid-cols-[1rem_2rem_1fr] items-center gap-2"><span className="text-muted-foreground">{index + 1}</span><CoinAvatar symbol={coin.symbol} color={coin.color} /><div className="text-right"><div className="font-bold">{coin.price}</div><div className={coin.change.startsWith("+") ? "text-sm font-bold text-positive" : "text-sm font-bold text-negative"}>{coin.change}</div></div></CoinLink>)}</div>
-    </div>
+    <DataTable title="币种排行" action="查看更多" href="#coins">
+      <table className="w-[760px] border-separate border-spacing-0 text-left text-sm">
+        <thead className="text-xs text-muted-foreground"><tr><StickyTh className="w-12">#排名</StickyTh><StickyTh className="left-12 w-36">#币种</StickyTh><th className="px-3 py-3">热度 ▾</th><th className="px-3 py-3">情绪动量</th><th className="px-3 py-3">提及量</th><th className="px-3 py-3">#价格</th><th className="px-3 py-3">#趋势</th></tr></thead>
+        <tbody>{coins.map((coin) => <tr key={coin.symbol} className="border-t border-panel-border/70"><StickyTd>{coin.rank}</StickyTd><StickyTd className="left-12"><CoinLink symbol={coin.symbol} className="flex items-center gap-2 py-3"><CoinAvatar symbol={coin.symbol} tone={coin.avatar} /><span><b className="block">{coin.symbol}</b><span className="text-xs text-muted-foreground">{coin.name}</span></span></CoinLink></StickyTd><td className="px-3 py-3 font-black text-primary">{coin.heat}</td><td className="px-3 py-3">{coin.momentum}</td><td className="px-3 py-3">{coin.mentions}</td><td className="px-3 py-3 font-bold">{coin.price}</td><td className="px-3 py-3"><Sparkline className="h-8 w-24 text-positive" /></td></tr>)}</tbody>
+      </table>
+    </DataTable>
   );
+}
+
+function KolDiscussionTable() {
+  return (
+    <DataTable title="KOL 讨论区表 · 24h" action="查看更多" href="#insight">
+      <table className="w-[720px] border-separate border-spacing-0 text-left text-sm">
+        <thead className="text-xs text-muted-foreground"><tr><StickyTh className="w-12">#排名</StickyTh><StickyTh className="left-12 w-40">#KOL</StickyTh><th className="px-3 py-3">#粉丝</th><th className="px-3 py-3">#热度</th><th className="px-3 py-3">#讨论币种</th><th className="px-3 py-3">#趋势</th></tr></thead>
+        <tbody>{kolRows.map((kol) => <tr key={kol.name}><StickyTd>{kol.rank}</StickyTd><StickyTd className="left-12"><div className="flex items-center gap-2 py-3"><span className="grid h-9 w-9 rounded-full bg-elevated place-items-center text-primary">{kol.name[0]}</span><b>{kol.name}</b></div></StickyTd><td className="px-3 py-3">{kol.followers}</td><td className="px-3 py-3 font-black text-primary">{kol.heat}</td><td className="px-3 py-3">{kol.coins}</td><td className={kol.tone === "up" ? "px-3 py-3 font-bold text-positive" : "px-3 py-3 font-bold text-negative"}>{kol.trend}</td></tr>)}</tbody>
+      </table>
+    </DataTable>
+  );
+}
+
+function CoinOverview() {
+  return (
+    <section className="rounded-3xl border border-panel-border bg-panel p-5 shadow-panel">
+      <div className="mb-4 flex items-center justify-between"><h2 className="text-2xl font-black">币种</h2><a href="#coins-watch" className="rounded-full border border-primary/60 px-4 py-2 text-sm font-bold text-primary">显示更多</a></div>
+      <div className="grid grid-cols-2 gap-3">
+        <MiniCoinTable title="热门币种" data={coins.slice(0, 3)} />
+        <MiniCoinTable title="最新上线" data={latest} />
+      </div>
+    </section>
+  );
+}
+
+function MiniCoinTable({ title, data }: { title: string; data: Array<{ rank: number; symbol: string; name?: string; price: string; change: string; tone: "up" | "down"; avatar: Coin["avatar"] }> }) {
+  return <div className="rounded-2xl border border-panel-border bg-background/45 p-3"><h3 className="mb-3 font-black text-muted-foreground">{title}</h3><div className="space-y-3">{data.map((coin) => <CoinLink key={coin.symbol} symbol={coin.symbol} className="grid grid-cols-[1rem_1.75rem_1fr] items-center gap-2"><span className="text-xs text-muted-foreground">{coin.rank}</span><CoinAvatar symbol={coin.symbol} tone={coin.avatar} small /><span className="min-w-0 text-right"><b className="block truncate text-sm">{coin.symbol}</b><span className="block text-xs font-bold text-foreground">{coin.price}</span><span className={coin.tone === "up" ? "block text-xs font-bold text-positive" : "block text-xs font-bold text-negative"}>{coin.change}</span></span></CoinLink>)}</div></div>;
 }
 
 function WatchlistTable() {
   return (
-    <section className="overflow-hidden rounded-3xl border border-panel-border bg-panel shadow-panel">
-      <div className="p-5"><h2 className="text-2xl font-black"><span className="mr-2 text-warning">★</span>自选币种</h2></div>
-      <div className="thin-scrollbar overflow-x-auto">
-        <table className="w-[720px] text-left text-sm">
-          <thead className="text-muted-foreground"><tr className="border-b border-panel-border"><th className="px-5 py-3">币种</th><th>热度</th><th>Price</th><th>Market&Sentiment</th><th>KOLS</th><th>Popular</th></tr></thead>
-          <tbody>{coins.map((coin) => <tr key={coin.symbol} className="border-b border-panel-border/60 transition hover:bg-elevated"><td className="px-5 py-4"><CoinLink symbol={coin.symbol} className="flex items-center gap-3"><CoinAvatar symbol={coin.symbol} color={coin.color} /><span><b className="block text-base">{coin.symbol}</b><span className="text-muted-foreground">{coin.name}</span></span></CoinLink></td><td className="font-black text-primary">{coin.heat}</td><td className="font-bold">{coin.price}</td><td><Sparkline className="h-8 w-28 text-positive" variant="mini" /></td><td><b>{coin.kol}</b> <span className={coin.tone === "up" ? "text-positive" : "text-negative"}>{coin.change}</span><br /><span className="text-muted-foreground">1,198</span></td><td><b>{coin.popular}</b></td></tr>)}</tbody>
-        </table>
-      </div>
-      <div className="mx-24 mb-5 mt-1 h-3 rounded-full bg-primary" />
-    </section>
+    <DataTable title="自选币种" id="coins-watch">
+      <table className="w-[940px] border-separate border-spacing-0 text-left text-sm">
+        <thead className="text-xs text-muted-foreground"><tr><StickyTh className="w-40">#币种</StickyTh><th className="px-3 py-3">#热度</th><th className="px-3 py-3">#price</th><th className="px-3 py-3">#market & sentiment</th><th className="px-3 py-3">#KOLS 24h/7d</th><th className="px-3 py-3">#popular 24h/7d</th><th className="px-3 py-3">#communites 24h/7d</th></tr></thead>
+        <tbody>{coins.map((coin) => <tr key={coin.symbol}><StickyTd><CoinLink symbol={coin.symbol} className="flex items-center gap-3 py-3"><CoinAvatar symbol={coin.symbol} tone={coin.avatar} /><span><b className="block">{coin.symbol}</b><span className="text-xs text-muted-foreground">{coin.name}</span></span></CoinLink></StickyTd><td className="px-3 py-3 font-black text-primary">{coin.heat}</td><td className="px-3 py-3 font-bold">{coin.price}</td><td className="px-3 py-3"><DualSparkline /></td><td className="px-3 py-3"><b>{coin.kol24}</b><span className="text-muted-foreground"> / {coin.kol7}</span></td><td className="px-3 py-3"><b>{coin.popular24}</b><span className="text-muted-foreground"> / {coin.popular7}</span></td><td className="px-3 py-3"><b>{coin.communities24}</b><span className="text-muted-foreground"> / {coin.communities7}</span></td></tr>)}</tbody>
+      </table>
+    </DataTable>
   );
 }
 
-function InsightPanel() {
-  return (
-    <section className="rounded-3xl border border-panel-border bg-panel p-6 shadow-panel">
-      <div className="mb-5 flex items-center justify-between"><h2 className="text-2xl font-black">AI 智能分析</h2><span className="font-black text-signal">置信度 85%</span></div>
-      <p className="text-lg font-bold leading-8 text-muted-foreground">当前市场整体偏多，BTC 主导地位持续增强。社交媒体讨论热度上升 12.3%，KOL 看多比例达 62%。建议关注 SOL 生态及 Layer2 赛道的短期机会。</p>
-      <ul className="mt-5 space-y-3 text-muted-foreground"><li>• BTC 突破关键阻力位，短期目标 80,000</li><li>• ETH 质押量创新高，长期基本面稳健</li><li>• 市场恐慌贪婪指数 72，处于贪婪区间</li></ul>
-      <div className="mt-6 flex items-center justify-between border-t border-panel-border pt-5"><span className="text-muted-foreground">风险等级 <b className="rounded-full bg-warning/20 px-3 py-1 text-warning">中等</b></span><span className="h-3 w-28 rounded-full bg-gradient-to-r from-primary to-signal" /></div>
-    </section>
-  );
+function AiReport() {
+  return <section className="rounded-3xl border border-panel-border bg-panel p-5 shadow-panel"><h2 className="mb-4 text-2xl font-black">AI 报告</h2><div className="mb-4 grid grid-cols-3 rounded-2xl border border-panel-border bg-background/40 p-1 text-center text-sm font-bold"><span className="rounded-xl bg-primary px-2 py-2 text-primary-foreground">市场情绪</span><span className="px-2 py-2 text-muted-foreground">社交数据</span><span className="px-2 py-2 text-muted-foreground">KOL 洞察</span></div><p className="text-base font-bold leading-7 text-muted-foreground">CO10 情绪扩散速度高于价格动量，短周期风险偏好回升。BTC 与 SOL 的社群提及量同步上升，但 KOL 观点分歧扩大，适合以波动率与热度背离作为观察因子。</p></section>;
+}
+
+function InsightMetrics() {
+  const metrics = [["CO-A-05-01", 92], ["CO-A-04-02", 76], ["CO-B-03-01", 61], ["CO-B-05-02", 48]];
+  return <section className="rounded-3xl border border-panel-border bg-panel p-5 shadow-panel"><div className="grid grid-cols-2 gap-4"><div><h2 className="mb-4 text-lg font-black">高频标签</h2><div className="flex flex-wrap gap-2"><span className="rounded-full border border-primary/60 bg-primary/15 px-3 py-2 text-sm font-bold text-primary">CO-B-03-01</span><span className="rounded-full border border-signal/60 bg-signal/15 px-3 py-2 text-sm font-bold text-signal">CO-B-05-02</span></div></div><div><h2 className="mb-4 text-lg font-black">关键市场指标</h2><div className="space-y-3">{metrics.map(([label, value]) => <div key={label as string}><div className="mb-1 flex justify-between text-xs text-muted-foreground"><span>{label}</span><span>{value}</span></div><div className="h-2 rounded-full bg-elevated"><div className="h-full rounded-full bg-primary" style={{ width: `${value}%` }} /></div></div>)}</div></div></div></section>;
 }
 
 function ArticleList() {
-  return (
-    <section className="rounded-3xl border border-panel-border bg-panel p-5 shadow-panel">
-      <h2 className="mb-4 text-2xl font-black"><span className="mr-2 text-signal">•</span>精选文章</h2>
-      <div className="mb-4 flex gap-5 text-lg font-black"><span className="rounded-xl bg-primary px-5 py-3 text-primary-foreground">洞察</span><span className="px-3 py-3 text-muted-foreground">案例</span></div>
-      <div className="space-y-3">{articles.map(([title, source, time], index) => <div key={title} className="flex items-center gap-4 bg-elevated p-4"><div className="grid h-14 w-14 place-items-center bg-gradient-to-br from-primary to-signal font-black">▧</div><div className="min-w-0 flex-1"><h3 className="truncate font-black">{title}</h3><p className="text-sm text-muted-foreground"><span className="text-primary">{source}</span> · {time}</p></div><span className="text-2xl text-muted-foreground">›</span></div>)}</div>
-    </section>
-  );
+  return <section className="rounded-3xl border border-panel-border bg-panel p-5 shadow-panel"><h2 className="mb-4 text-2xl font-black">推荐文章</h2><div className="mb-4 flex gap-2 text-sm font-black"><span className="rounded-lg bg-primary px-4 py-2 text-primary-foreground">观点</span><span className="rounded-lg border border-panel-border px-4 py-2 text-muted-foreground">案例</span></div><div className="space-y-3">{articles.map(([type, title, source, time]) => <article key={title} className="border-l-2 border-primary bg-elevated p-4"><div className="mb-2 text-xs font-bold text-primary">{type}</div><h3 className="font-black leading-6">{title}</h3><p className="mt-2 text-xs text-muted-foreground">{source} · {time}</p></article>)}</div></section>;
 }
 
 function FooterBrand() {
-  return <footer className="py-8 text-center text-muted-foreground"><div className="mb-2 inline-flex items-center gap-3 text-xl font-black text-foreground"><span className="grid h-10 w-10 place-items-center bg-gradient-to-br from-primary to-signal">C</span>CryptOracle</div><p>AI-Powered Crypto Intelligence</p><p className="mt-2">© 2026 CryptOracle. All rights reserved.</p></footer>;
+  return <footer className="py-10 text-center text-muted-foreground"><div className="mb-2 inline-flex items-center gap-3 text-xl font-black lowercase text-foreground"><span className="grid h-10 w-10 place-items-center rounded-xl border border-primary/60 bg-primary/15 text-primary">co</span>cryptoracle</div><p>Your Crypto Markets Dashboard, Optimized for Alpha</p></footer>;
+}
+
+function DataTable({ title, action, href, id, children }: { title: string; action?: string; href?: string; id?: string; children: React.ReactNode }) {
+  return <section id={id} className="overflow-hidden rounded-3xl border border-panel-border bg-panel shadow-panel"><div className="flex items-center justify-between p-5"><h2 className="text-2xl font-black">{title}</h2>{action && href ? <a className="text-sm font-bold text-primary" href={href}>{action} →</a> : null}</div><div className="thin-scrollbar overflow-x-auto border-t border-panel-border">{children}</div></section>;
+}
+
+function StickyTh({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <th className={`sticky left-0 z-10 bg-panel px-3 py-3 ${className}`}>{children}</th>;
+}
+
+function StickyTd({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <td className={`sticky left-0 z-10 border-t border-panel-border/70 bg-panel px-3 py-2 ${className}`}>{children}</td>;
 }
 
 function BottomNav() {
-  return (
-    <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-[430px] -translate-x-1/2 grid-cols-3 border-t border-panel-border bg-background/95 px-6 pt-3 safe-bottom backdrop-blur-xl">
-      <a href="#market" className="grid justify-items-center gap-1 text-primary"><PulseIcon /><span className="text-sm font-bold">行情</span></a>
-      <a href="#watchlist" className="grid justify-items-center gap-1 text-muted-foreground transition hover:text-primary"><PlusIcon /><span className="text-sm font-bold">自选</span></a>
-      <a href="#insight" className="grid justify-items-center gap-1 text-muted-foreground transition hover:text-primary"><BookIcon /><span className="text-sm font-bold">洞察</span></a>
-    </nav>
-  );
+  return <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-[430px] -translate-x-1/2 grid-cols-3 border-t border-panel-border bg-background/95 px-6 pt-3 safe-bottom backdrop-blur-xl"><a href="#market" className="grid justify-items-center gap-1 text-primary"><PulseIcon /><span className="text-sm font-bold">行情</span></a><a href="#coins" className="grid justify-items-center gap-1 text-muted-foreground transition hover:text-primary"><CoinIcon /><span className="text-sm font-bold">币种</span></a><a href="#insight" className="grid justify-items-center gap-1 text-muted-foreground transition hover:text-primary"><BookIcon /><span className="text-sm font-bold">洞察</span></a></nav>;
 }
 
 function CoinLink({ symbol, className, children }: { symbol: string; className?: string; children: React.ReactNode }) {
-  return <Link to="/coin/$symbol" params={{ symbol }} className={className}>{children}</Link>;
+  return <Link to="/coin/$symbol" params={{ symbol }} hash="coins" className={className}>{children}</Link>;
 }
 
-function CoinAvatar({ symbol, color }: { symbol: string; color: string }) {
-  return <span className={`grid h-9 w-9 place-items-center rounded-full ${color} text-sm font-black text-primary-foreground`}>{symbol[0]}</span>;
+function CoinAvatar({ symbol, tone, small }: { symbol: string; tone: Coin["avatar"]; small?: boolean }) {
+  const toneClass = { primary: "bg-primary", signal: "bg-signal", warning: "bg-warning", positive: "bg-positive", negative: "bg-negative", secondary: "bg-secondary" }[tone];
+  return <span className={`grid ${small ? "h-7 w-7 text-xs" : "h-9 w-9 text-sm"} place-items-center rounded-full ${toneClass} font-black text-primary-foreground`}>{symbol[0]}</span>;
 }
 
-function Sparkline({ className, variant }: { className: string; variant: "wave" | "mini" }) {
-  const d = variant === "wave" ? "M0 55 C30 20 56 82 88 45 S142 20 176 55 238 80 300 28 370 52 430 20" : "M0 18 C14 12 24 20 38 12 S66 8 82 12 110 2";
-  return <svg className={className} viewBox={variant === "wave" ? "0 0 430 100" : "0 0 112 32"} fill="none"><path d={d} stroke="currentColor" strokeWidth="4" strokeLinecap="round" /><path d={d} stroke="currentColor" strokeOpacity="0.18" strokeWidth="16" strokeLinecap="round" /></svg>;
+function Sparkline({ className }: { className: string }) {
+  return <svg className={className} viewBox="0 0 112 32" fill="none"><path d="M0 20 C14 8 24 26 38 14 S66 7 82 13 96 27 112 8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>;
+}
+
+function DualSparkline() {
+  return <svg className="h-9 w-32" viewBox="0 0 132 36" fill="none"><path d="M0 24 C18 6 32 29 48 15 S76 10 92 18 112 31 132 9" stroke="var(--color-positive)" strokeWidth="3" strokeLinecap="round" /><path d="M0 16 C18 23 31 4 48 19 S78 30 96 13 116 7 132 20" stroke="var(--color-primary)" strokeWidth="3" strokeLinecap="round" /></svg>;
 }
 
 function SearchIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>; }
-function BellIcon() { return <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>; }
 function PulseIcon() { return <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>; }
-function PlusIcon() { return <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M7 12h10" /></svg>; }
+function CoinIcon() { return <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="8" /><path d="M8 12h8M12 8v8" /></svg>; }
 function BookIcon() { return <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z" /><path d="M4 5.5A2.5 2.5 0 0 1 6.5 8H20" /></svg>; }
