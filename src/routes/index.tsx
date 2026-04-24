@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -97,15 +98,68 @@ function TopBar() {
   return (
     <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-4 pb-4 pt-5 backdrop-blur-xl">
       <div className="flex items-center gap-3">
-        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-elevated ring-2 ring-primary/70 shadow-glow">
-          <span className="text-lg font-black text-primary">A</span>
-        </div>
+        <UserCenterSheet />
         <label className="flex h-12 flex-1 items-center gap-2 rounded-full border border-panel-border bg-elevated px-4 text-muted-foreground focus-within:border-primary">
           <SearchIcon />
           <input className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" placeholder="搜索币种 / 指标 / KOL" />
         </label>
       </div>
     </header>
+  );
+}
+
+function UserCenterSheet() {
+  const primaryActions = [
+    { label: "登录 / 注册", desc: "同步自选与指标偏好", to: "/login" as const, icon: "↗" },
+    { label: "订阅付费", desc: "解锁完整数据库与 AI 报告", to: "/pricing" as const, icon: "◆" },
+    { label: "个人中心", desc: "账户、通知与数据导出", to: "/account" as const, icon: "◎" },
+  ];
+  const quickItems = ["自选同步", "价格预警", "报告推送", "帮助中心"];
+
+  return (
+    <Sheet>
+      <SheetTrigger className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-elevated ring-2 ring-primary/70 shadow-glow" aria-label="打开个人中心">
+        <span className="text-lg font-black text-primary">A</span>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[86%] max-w-[360px] border-panel-border bg-background p-0 text-foreground">
+        <div className="flex min-h-full flex-col px-5 pb-6 pt-7">
+          <SheetHeader className="text-left">
+            <div className="flex items-center gap-4">
+              <span className="grid h-16 w-16 place-items-center rounded-full bg-elevated text-2xl font-black text-primary ring-2 ring-primary/70 shadow-glow">A</span>
+              <div>
+                <SheetTitle className="text-2xl font-black">Alpha Researcher</SheetTitle>
+                <p className="mt-1 text-sm font-bold text-muted-foreground">Pro 试用中 · 6 天后到期</p>
+              </div>
+            </div>
+          </SheetHeader>
+
+          <div className="mt-6 rounded-3xl border border-primary/60 bg-primary/15 p-4">
+            <div className="flex items-center justify-between">
+              <div><p className="text-sm font-black text-primary">Database Credits</p><p className="mt-1 text-2xl font-black">8,420</p></div>
+              <Link to="/pricing" className="rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground">升级</Link>
+            </div>
+          </div>
+
+          <nav className="mt-5 space-y-3">
+            {primaryActions.map((item) => (
+              <Link key={item.label} to={item.to} className="flex items-center gap-3 rounded-2xl border border-panel-border bg-panel p-4 shadow-panel transition hover:border-primary/70">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-elevated text-lg font-black text-primary">{item.icon}</span>
+                <span className="min-w-0 flex-1"><b className="block">{item.label}</b><span className="mt-1 block text-xs font-bold text-muted-foreground">{item.desc}</span></span>
+                <span className="text-primary">›</span>
+              </Link>
+            ))}
+          </nav>
+
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            {quickItems.map((item) => <button key={item} className="h-12 rounded-2xl border border-panel-border bg-elevated text-sm font-bold text-muted-foreground">{item}</button>)}
+          </div>
+
+          <div className="mt-auto border-t border-panel-border pt-5 text-xs font-bold text-muted-foreground">
+            CryptOracle · 加密社群情绪数据库
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
