@@ -94,7 +94,7 @@ function IndexIntroCards() {
                 <div className="text-[12px] font-black tracking-tight">{c.title}</div>
                 <div className="mt-0.5 text-[10px] leading-snug text-muted-foreground">{c.desc}</div>
               </div>
-              <Link to="/index-detail" className="shrink-0 rounded-full border border-primary/60 bg-primary/10 px-2 py-0.5 text-[9px] font-bold text-primary">详情 →</Link>
+              <Link to="/index-detail" className="shrink-0 rounded-full border border-primary/60 bg-primary/10 px-2 py-0.5 text-[9px] font-bold text-primary">​</Link>
             </div>
             <div className="mt-2 flex items-baseline gap-2">
               <div className={`font-mono text-[18px] font-black tabular-nums ${up ? "text-positive" : "text-negative"}`}>{c.value}</div>
