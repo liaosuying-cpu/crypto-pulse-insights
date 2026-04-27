@@ -39,7 +39,7 @@ export function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <main className="mx-auto min-h-screen max-w-[430px] bg-background pb-24 text-foreground shadow-2xl">
       <TopBar />
-      <div className="space-y-3.5 px-3 pb-5 pt-[68px]">{children}</div>
+      <div className="space-y-3.5 px-3 pb-5 pt-[92px]">{children}</div>
       <BottomNav />
     </main>
   );
@@ -47,7 +47,7 @@ export function PageShell({ children }: { children: React.ReactNode }) {
 
 function TopBar() {
   return (
-    <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-3 pb-2.5 pt-3 backdrop-blur-xl">
+    <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-3 pb-2 pt-3 backdrop-blur-xl">
       <div className="flex items-center gap-2.5">
         <UserCenterSheet />
         <label className="flex h-9 flex-1 items-center gap-2 rounded-full border border-panel-border bg-elevated px-3 text-muted-foreground focus-within:border-primary">
@@ -55,7 +55,49 @@ function TopBar() {
           <input className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground" placeholder="搜索币种 / 指标 / KOL" />
         </label>
       </div>
+      <LiveStatusBar />
     </header>
+  );
+}
+
+function LiveStatusBar() {
+  const [open, setOpen] = useState(false);
+  const [count, setCount] = useState(1727018);
+  useEffect(() => {
+    const id = setInterval(() => setCount((c) => c + Math.floor(Math.random() * 9) + 1), 1500);
+    return () => clearInterval(id);
+  }, []);
+  const stats = [
+    { label: "总数据", value: "2.84亿" },
+    { label: "总社群", value: "18,420" },
+    { label: "总 KOL", value: "32,168" },
+    { label: "指标数", value: "146" },
+  ];
+  return (
+    <div className="mt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex h-6 w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 text-[11px] font-bold text-primary transition hover:bg-primary/15"
+        aria-expanded={open}
+      >
+        <span className="relative flex h-1.5 w-1.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-positive opacity-75" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-positive" />
+        </span>
+        <span>今日已扫描 <span className="tabular-nums text-foreground">{count.toLocaleString()}</span> 条社交动态</span>
+      </button>
+      {open ? (
+        <div className="animate-fade-in mt-2 grid grid-cols-4 gap-1.5 rounded-xl border border-panel-border bg-elevated p-2">
+          {stats.map((s) => (
+            <div key={s.label} className="rounded-lg bg-panel px-1.5 py-1.5 text-center">
+              <div className="text-[13px] font-black text-foreground tabular-nums">{s.value}</div>
+              <div className="mt-0.5 text-[10px] font-bold text-muted-foreground">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
