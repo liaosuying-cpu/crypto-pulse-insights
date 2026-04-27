@@ -169,10 +169,10 @@ export function DualSparkline() {
 }
 
 export function FooterBrand() {
-  return <footer className="py-10 text-center text-muted-foreground"><div className="mb-2 inline-flex items-center gap-3 text-xl font-black lowercase text-foreground"><span className="grid h-10 w-10 place-items-center rounded-xl border border-primary/60 bg-primary/15 text-primary">co</span>cryptoracle</div><p>Your Crypto Markets Dashboard, Optimized for Alpha</p></footer>;
+  return <footer className="py-6 text-center text-[11px] text-muted-foreground"><div className="mb-1 inline-flex items-center gap-2 text-base font-black lowercase text-foreground"><span className="grid h-7 w-7 place-items-center rounded-lg border border-primary/60 bg-primary/15 text-primary">co</span>cryptoracle</div><p>Your Crypto Markets Dashboard, Optimized for Alpha</p></footer>;
 }
 
-function SearchIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>; }
-function PulseIcon() { return <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>; }
-function CoinIcon() { return <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="8" /><path d="M8 12h8M12 8v8" /></svg>; }
-function BookIcon() { return <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z" /><path d="M4 5.5A2.5 2.5 0 0 1 6.5 8H20" /></svg>; }
+function SearchIcon() { return <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>; }
+function PulseIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>; }
+function CoinIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="8" /><path d="M8 12h8M12 8v8" /></svg>; }
+function BookIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z" /><path d="M4 5.5A2.5 2.5 0 0 1 6.5 8H20" /></svg>; }
