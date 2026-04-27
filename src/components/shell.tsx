@@ -157,7 +157,7 @@ export function CoinLink({ symbol, className, children }: { symbol: string; clas
 
 export function CoinAvatar({ symbol, tone, small }: { symbol: string; tone: Coin["avatar"]; small?: boolean }) {
   const toneClass = { primary: "bg-primary", signal: "bg-signal", warning: "bg-warning", positive: "bg-positive", negative: "bg-negative", secondary: "bg-secondary" }[tone];
-  return <span className={`grid ${small ? "h-7 w-7 text-xs" : "h-9 w-9 text-sm"} place-items-center rounded-full ${toneClass} font-black text-primary-foreground`}>{symbol[0]}</span>;
+  return <span className={`grid ${small ? "h-6 w-6 text-[10px]" : "h-7 w-7 text-[11px]"} place-items-center rounded-full ${toneClass} font-black text-primary-foreground`}>{symbol[0]}</span>;
 }
 
 export function Sparkline({ className }: { className: string }) {
