@@ -123,6 +123,7 @@ function NewsTicker() {
 
 function AivixChart() {
   const bars = [52, 66, 58, 72, 84, 64, 48, 40, 34, 42, 61, 78, 88, 73, 69, 55, 47, 60, 77, 81, 67, 58];
+  const isAnomaly = (v: number) => v > 85 || v < 36;
   return (
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
       <div className="mb-2 flex items-start justify-between gap-3">
@@ -144,9 +145,50 @@ function AivixChart() {
         <div className="w-[560px]">
           <div className="relative h-36 border-b border-panel-border/80">
             <div className="absolute inset-x-0 bottom-0 flex h-28 items-end gap-1.5 px-1">
-              {bars.map((height, index) => <div key={index} className="w-4 rounded-t bg-primary/70" style={{ height: `${height}%` }} />)}
+              {bars.map((height, index) => {
+                const anomaly = isAnomaly(height);
+                const hour = (index % 24).toString().padStart(2, "0") + ":00";
+                const aivix = (60 + (height - 50) * 0.6).toFixed(1);
+                const social = (height * 12.4).toFixed(0);
+                return (
+                  <Popover key={index}>
+                    <PopoverTrigger asChild>
+                      <button className="relative w-4 cursor-pointer p-0">
+                        <div
+                          className={`w-full rounded-t transition-opacity hover:opacity-100 ${anomaly ? "bg-warning" : "bg-primary/70 hover:bg-primary"}`}
+                          style={{ height: `${height * 1.12}px` }}
+                        />
+                        {anomaly && (
+                          <AlertTriangle className="absolute -top-3 left-1/2 h-3 w-3 -translate-x-1/2 text-warning animate-pulse" />
+                        )}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" className="w-52 p-2.5 text-[11px]">
+                      <div className="mb-1.5 flex items-center justify-between">
+                        <b className="text-[12px]">{hour}</b>
+                        {anomaly && <span className="rounded bg-warning/20 px-1.5 py-0.5 text-[9px] font-black text-warning">异常</span>}
+                      </div>
+                      <div className="space-y-1 font-mono tabular-nums">
+                        <Row label="AIVIX" value={aivix} />
+                        <Row label="Social Vol" value={social} />
+                        <Row label="CO10 index" value={(1240 + height * 3.2).toFixed(2)} />
+                      </div>
+                      {anomaly && (
+                        <div className="mt-2 rounded border border-warning/40 bg-warning/10 p-1.5 text-[10px] leading-snug">
+                          <b className="text-warning">预测分析：</b>
+                          <span className="text-muted-foreground">
+                            {height > 85
+                              ? "情绪过热，未来 4-8h 出现回调概率 68%，关注衍生品资金费率。"
+                              : "情绪超卖，私域 KOL 看多比例回升至 54%，存在反弹窗口。"}
+                          </span>
+                        </div>
+                      )}
+                    </PopoverContent>
+                  </Popover>
+                );
+              })}
             </div>
-            <svg className="absolute inset-0 h-full w-full text-foreground" viewBox="0 0 620 190" fill="none" preserveAspectRatio="none">
+            <svg className="pointer-events-none absolute inset-0 h-full w-full text-foreground" viewBox="0 0 620 190" fill="none" preserveAspectRatio="none">
               <path d="M0 116 C34 82 54 152 91 92 S151 45 192 96 268 146 318 82 396 48 448 76 532 136 620 54" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
             </svg>
           </div>
@@ -159,6 +201,15 @@ function AivixChart() {
         </div>
       </div>
     </section>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between">
+      <span className="text-muted-foreground">{label}</span>
+      <b>{value}</b>
+    </div>
   );
 }
 
