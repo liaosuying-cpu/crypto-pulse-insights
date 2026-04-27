@@ -13,7 +13,6 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as InsightRouteImport } from './routes/insight'
-import { Route as IndexDetailRouteImport } from './routes/index-detail'
 import { Route as ExportRouteImport } from './routes/export'
 import { Route as CoinsRouteImport } from './routes/coins'
 import { Route as AccountRouteImport } from './routes/account'
@@ -38,11 +37,6 @@ const LoginRoute = LoginRouteImport.update({
 const InsightRoute = InsightRouteImport.update({
   id: '/insight',
   path: '/insight',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexDetailRoute = IndexDetailRouteImport.update({
-  id: '/index-detail',
-  path: '/index-detail',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExportRoute = ExportRouteImport.update({
@@ -76,7 +70,6 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/coins': typeof CoinsRoute
   '/export': typeof ExportRoute
-  '/index-detail': typeof IndexDetailRoute
   '/insight': typeof InsightRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
@@ -88,7 +81,6 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/coins': typeof CoinsRoute
   '/export': typeof ExportRoute
-  '/index-detail': typeof IndexDetailRoute
   '/insight': typeof InsightRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
@@ -101,7 +93,6 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/coins': typeof CoinsRoute
   '/export': typeof ExportRoute
-  '/index-detail': typeof IndexDetailRoute
   '/insight': typeof InsightRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
@@ -115,7 +106,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/coins'
     | '/export'
-    | '/index-detail'
     | '/insight'
     | '/login'
     | '/pricing'
@@ -127,7 +117,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/coins'
     | '/export'
-    | '/index-detail'
     | '/insight'
     | '/login'
     | '/pricing'
@@ -139,7 +128,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/coins'
     | '/export'
-    | '/index-detail'
     | '/insight'
     | '/login'
     | '/pricing'
@@ -152,7 +140,6 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   CoinsRoute: typeof CoinsRoute
   ExportRoute: typeof ExportRoute
-  IndexDetailRoute: typeof IndexDetailRoute
   InsightRoute: typeof InsightRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
@@ -188,13 +175,6 @@ declare module '@tanstack/react-router' {
       path: '/insight'
       fullPath: '/insight'
       preLoaderRoute: typeof InsightRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/index-detail': {
-      id: '/index-detail'
-      path: '/index-detail'
-      fullPath: '/index-detail'
-      preLoaderRoute: typeof IndexDetailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/export': {
@@ -240,7 +220,6 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   CoinsRoute: CoinsRoute,
   ExportRoute: ExportRoute,
-  IndexDetailRoute: IndexDetailRoute,
   InsightRoute: InsightRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
