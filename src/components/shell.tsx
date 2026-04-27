@@ -36,9 +36,9 @@ export const latest = [
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto min-h-screen max-w-[430px] bg-background pb-28 text-foreground shadow-2xl">
+    <main className="mx-auto min-h-screen max-w-[430px] bg-background pb-24 text-foreground shadow-2xl">
       <TopBar />
-      <div className="space-y-5 px-4 pb-6 pt-28">{children}</div>
+      <div className="space-y-3.5 px-3 pb-5 pt-[68px]">{children}</div>
       <BottomNav />
     </main>
   );
@@ -46,12 +46,12 @@ export function PageShell({ children }: { children: React.ReactNode }) {
 
 function TopBar() {
   return (
-    <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-4 pb-4 pt-5 backdrop-blur-xl">
-      <div className="flex items-center gap-3">
+    <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-3 pb-2.5 pt-3 backdrop-blur-xl">
+      <div className="flex items-center gap-2.5">
         <UserCenterSheet />
-        <label className="flex h-12 flex-1 items-center gap-2 rounded-full border border-panel-border bg-elevated px-4 text-muted-foreground focus-within:border-primary">
+        <label className="flex h-9 flex-1 items-center gap-2 rounded-full border border-panel-border bg-elevated px-3 text-muted-foreground focus-within:border-primary">
           <SearchIcon />
-          <input className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" placeholder="搜索币种 / 指标 / KOL" />
+          <input className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground" placeholder="搜索币种 / 指标 / KOL" />
         </label>
       </div>
     </header>
@@ -68,14 +68,14 @@ function UserCenterSheet() {
 
   return (
     <Sheet>
-      <SheetTrigger className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-elevated ring-2 ring-primary/70 shadow-glow" aria-label="打开个人中心">
-        <span className="text-lg font-black text-primary">A</span>
+      <SheetTrigger className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-elevated ring-2 ring-primary/70 shadow-glow" aria-label="打开个人中心">
+        <span className="text-sm font-black text-primary">A</span>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[86%] max-w-[360px] border-panel-border bg-background p-0 text-foreground">
-        <div className="flex min-h-full flex-col px-5 pb-6 pt-7">
+      <SheetContent side="left" className="w-[84%] max-w-[340px] border-panel-border bg-background p-0 text-foreground">
+        <div className="flex min-h-full flex-col px-4 pb-5 pt-6">
           <SheetHeader className="text-left">
-            <div className="flex items-center gap-4">
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-elevated text-2xl font-black text-primary ring-2 ring-primary/70 shadow-glow">A</span>
+            <div className="flex items-center gap-3">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-elevated text-lg font-black text-primary ring-2 ring-primary/70 shadow-glow">A</span>
               <div>
                 <SheetTitle className="text-2xl font-black">Alpha Researcher</SheetTitle>
                 <p className="mt-1 text-sm font-bold text-muted-foreground">Pro 试用中 · 6 天后到期</p>
