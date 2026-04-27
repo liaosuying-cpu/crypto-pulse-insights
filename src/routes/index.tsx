@@ -1,4 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AlertTriangle, Info } from "lucide-react";
 import { PageShell, DataTable, StickyTh, StickyTd, CoinLink, CoinAvatar, Sparkline, coins } from "@/components/shell";
 
 export const Route = createFileRoute("/")({
@@ -26,10 +29,80 @@ function MarketPage() {
     <PageShell>
       <h1 className="sr-only">行情</h1>
       <NewsTicker />
+      <IndexIntro />
+      <LiveSentimentTicker />
       <AivixChart />
       <MarketRankTable />
       <KolDiscussionTable />
     </PageShell>
+  );
+}
+
+function IndexIntro() {
+  return (
+    <section className="rounded-2xl border border-panel-border bg-panel p-3 shadow-panel">
+      <div className="flex items-start justify-between gap-2.5">
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex items-center gap-1.5">
+            <Info className="h-3 w-3 text-primary" />
+            <h2 className="text-[12px] font-black tracking-tight">指数简介</h2>
+          </div>
+          <p className="text-[11px] leading-relaxed text-muted-foreground">
+            <b className="text-foreground">CO10 index</b> 针对加密市场高波动特征提出的市值加权基准指数；
+            <b className="text-foreground"> CO10 AIVIX</b> 专注私域数据，捕捉深层社群情绪波动，提供先导性预警。
+          </p>
+        </div>
+        <Link to="/index-detail" className="shrink-0 rounded-full border border-primary/60 bg-primary/10 px-2.5 py-1 text-[10px] font-bold text-primary">详情 →</Link>
+      </div>
+    </section>
+  );
+}
+
+function useTicking(initial: number, range: number) {
+  const [v, setV] = useState(initial);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setV((prev) => {
+        const delta = (Math.random() - 0.5) * range;
+        const next = prev + delta;
+        return Math.max(0, Math.min(100, next));
+      });
+    }, 1500);
+    return () => clearInterval(id);
+  }, [range]);
+  return v;
+}
+
+function LiveSentimentTicker() {
+  const fearGreed = useTicking(62, 1.8);
+  const aivix = useTicking(74.3, 1.2);
+  const social = useTicking(48, 2.4);
+  const dominance = useTicking(55.1, 0.6);
+  const items = [
+    { label: "Fear & Greed", value: fearGreed, suffix: "", tone: "primary" as const },
+    { label: "AIVIX", value: aivix, suffix: "", tone: "signal" as const },
+    { label: "Social Vol", value: social, suffix: "%", tone: "positive" as const },
+    { label: "BTC.D", value: dominance, suffix: "%", tone: "warning" as const },
+  ];
+  return (
+    <section className="rounded-2xl border border-panel-border bg-panel p-3 shadow-panel">
+      <div className="mb-2 flex items-center gap-1.5">
+        <span className="h-1.5 w-1.5 rounded-full bg-positive pulse-glow" />
+        <h2 className="text-[11px] font-black uppercase tracking-wider text-muted-foreground">宏观情绪 · 实时</h2>
+      </div>
+      <div className="grid grid-cols-4 gap-2">
+        {items.map((it) => (
+          <div key={it.label} className="rounded-lg border border-panel-border/70 bg-background/40 p-2">
+            <div className="text-[9px] uppercase tracking-wide text-muted-foreground">{it.label}</div>
+            <div className={`mt-0.5 font-mono text-[14px] font-black tabular-nums ${
+              it.tone === "primary" ? "text-primary" : it.tone === "signal" ? "text-signal" : it.tone === "positive" ? "text-positive" : "text-warning"
+            }`}>
+              {it.value.toFixed(1)}{it.suffix}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -50,6 +123,7 @@ function NewsTicker() {
 
 function AivixChart() {
   const bars = [52, 66, 58, 72, 84, 64, 48, 40, 34, 42, 61, 78, 88, 73, 69, 55, 47, 60, 77, 81, 67, 58];
+  const isAnomaly = (v: number) => v > 85 || v < 36;
   return (
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
       <div className="mb-2 flex items-start justify-between gap-3">
@@ -71,9 +145,50 @@ function AivixChart() {
         <div className="w-[560px]">
           <div className="relative h-36 border-b border-panel-border/80">
             <div className="absolute inset-x-0 bottom-0 flex h-28 items-end gap-1.5 px-1">
-              {bars.map((height, index) => <div key={index} className="w-4 rounded-t bg-primary/70" style={{ height: `${height}%` }} />)}
+              {bars.map((height, index) => {
+                const anomaly = isAnomaly(height);
+                const hour = (index % 24).toString().padStart(2, "0") + ":00";
+                const aivix = (60 + (height - 50) * 0.6).toFixed(1);
+                const social = (height * 12.4).toFixed(0);
+                return (
+                  <Popover key={index}>
+                    <PopoverTrigger asChild>
+                      <button className="relative w-4 cursor-pointer p-0">
+                        <div
+                          className={`w-full rounded-t transition-opacity hover:opacity-100 ${anomaly ? "bg-warning" : "bg-primary/70 hover:bg-primary"}`}
+                          style={{ height: `${height * 1.12}px` }}
+                        />
+                        {anomaly && (
+                          <AlertTriangle className="absolute -top-3 left-1/2 h-3 w-3 -translate-x-1/2 text-warning animate-pulse" />
+                        )}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" className="w-52 p-2.5 text-[11px]">
+                      <div className="mb-1.5 flex items-center justify-between">
+                        <b className="text-[12px]">{hour}</b>
+                        {anomaly && <span className="rounded bg-warning/20 px-1.5 py-0.5 text-[9px] font-black text-warning">异常</span>}
+                      </div>
+                      <div className="space-y-1 font-mono tabular-nums">
+                        <Row label="AIVIX" value={aivix} />
+                        <Row label="Social Vol" value={social} />
+                        <Row label="CO10 index" value={(1240 + height * 3.2).toFixed(2)} />
+                      </div>
+                      {anomaly && (
+                        <div className="mt-2 rounded border border-warning/40 bg-warning/10 p-1.5 text-[10px] leading-snug">
+                          <b className="text-warning">预测分析：</b>
+                          <span className="text-muted-foreground">
+                            {height > 85
+                              ? "情绪过热，未来 4-8h 出现回调概率 68%，关注衍生品资金费率。"
+                              : "情绪超卖，私域 KOL 看多比例回升至 54%，存在反弹窗口。"}
+                          </span>
+                        </div>
+                      )}
+                    </PopoverContent>
+                  </Popover>
+                );
+              })}
             </div>
-            <svg className="absolute inset-0 h-full w-full text-foreground" viewBox="0 0 620 190" fill="none" preserveAspectRatio="none">
+            <svg className="pointer-events-none absolute inset-0 h-full w-full text-foreground" viewBox="0 0 620 190" fill="none" preserveAspectRatio="none">
               <path d="M0 116 C34 82 54 152 91 92 S151 45 192 96 268 146 318 82 396 48 448 76 532 136 620 54" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
             </svg>
           </div>
@@ -86,6 +201,15 @@ function AivixChart() {
         </div>
       </div>
     </section>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between">
+      <span className="text-muted-foreground">{label}</span>
+      <b>{value}</b>
+    </div>
   );
 }
 
