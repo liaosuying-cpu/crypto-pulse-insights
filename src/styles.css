@@ -169,6 +169,8 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.45;
     letter-spacing: 0;
     overflow-x: hidden;
   }
