@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell, DataTable, StickyTh, StickyTd, CoinLink, CoinAvatar, DualSparkline, FooterBrand, coins, latest, type Coin } from "@/components/shell";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/coins")({
   head: () => ({
@@ -17,10 +18,118 @@ function CoinsPage() {
   return (
     <PageShell>
       <h1 className="sr-only">币种</h1>
+      <MindshareSection />
       <CoinOverview />
       <WatchlistTable />
       <FooterBrand />
     </PageShell>
+  );
+}
+
+const MIND_SECTORS = [
+  { key: "ai", label: "AI", color: "oklch(0.72 0.18 280)" },
+  { key: "meme", label: "Meme", color: "oklch(0.78 0.19 25)" },
+  { key: "defi", label: "DeFi", color: "oklch(0.74 0.16 165)" },
+  { key: "l1", label: "L1", color: "oklch(0.72 0.14 230)" },
+  { key: "rwa", label: "RWA", color: "oklch(0.75 0.14 90)" },
+] as const;
+
+const mindshareData = [
+  { t: "00:00", ai: 18, meme: 32, defi: 16, l1: 22, rwa: 12 },
+  { t: "04:00", ai: 21, meme: 30, defi: 16, l1: 21, rwa: 12 },
+  { t: "08:00", ai: 25, meme: 28, defi: 15, l1: 21, rwa: 11 },
+  { t: "12:00", ai: 29, meme: 25, defi: 15, l1: 20, rwa: 11 },
+  { t: "16:00", ai: 33, meme: 22, defi: 14, l1: 20, rwa: 11 },
+  { t: "20:00", ai: 36, meme: 19, defi: 14, l1: 20, rwa: 11 },
+  { t: "现在", ai: 38, meme: 17, defi: 14, l1: 20, rwa: 11 },
+];
+
+const sentimentRows = [
+  { sector: "AI", share: "38%", delta: "+11.4%", bull: 72, deltaTone: "up" as const },
+  { sector: "Meme", share: "17%", delta: "-15.0%", bull: 41, deltaTone: "down" as const },
+  { sector: "DeFi", share: "14%", delta: "-2.1%", bull: 58, deltaTone: "down" as const },
+  { sector: "L1", share: "20%", delta: "-1.0%", bull: 63, deltaTone: "down" as const },
+  { sector: "RWA", share: "11%", delta: "-0.8%", bull: 67, deltaTone: "down" as const },
+];
+
+function MindshareSection() {
+  return (
+    <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
+      <div className="mb-2 flex items-end justify-between">
+        <div>
+          <h2 className="text-base font-black tracking-tight">处理币种 · Mindshare</h2>
+          <p className="mt-0.5 text-[10.5px] leading-tight text-muted-foreground">心智占有率：AI 板块正在挤压 Meme · 24h</p>
+        </div>
+        <span className="rounded-full border border-positive/50 bg-positive/10 px-2 py-0.5 text-[10px] font-bold text-positive">AI ↑ 11.4%</span>
+      </div>
+
+      <div className="mb-2 flex flex-wrap gap-x-2.5 gap-y-1">
+        {MIND_SECTORS.map((s) => (
+          <span key={s.key} className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground">
+            <span className="h-2 w-2 rounded-sm" style={{ background: s.color }} />
+            {s.label}
+          </span>
+        ))}
+      </div>
+
+      <div className="h-[150px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={mindshareData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }} stackOffset="expand">
+            <defs>
+              {MIND_SECTORS.map((s) => (
+                <linearGradient key={s.key} id={`g-${s.key}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={s.color} stopOpacity={0.95} />
+                  <stop offset="100%" stopColor={s.color} stopOpacity={0.55} />
+                </linearGradient>
+              ))}
+            </defs>
+            <XAxis dataKey="t" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} axisLine={false} tickLine={false} />
+            <YAxis tick={false} axisLine={false} tickLine={false} width={0} />
+            <Tooltip
+              contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 11, padding: "6px 8px" }}
+              formatter={(v: number, n: string) => [`${(v * 100).toFixed(1)}%`, n.toUpperCase()]}
+            />
+            {MIND_SECTORS.map((s) => (
+              <Area key={s.key} type="monotone" dataKey={s.key} stackId="1" stroke={s.color} strokeWidth={1} fill={`url(#g-${s.key})`} />
+            ))}
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="mt-2.5 overflow-hidden rounded-xl border border-panel-border bg-background/45">
+        <table className="w-full text-left text-[11px]">
+          <thead className="text-[9.5px] uppercase tracking-wide text-muted-foreground">
+            <tr>
+              <th className="px-2.5 py-1.5 font-bold">板块</th>
+              <th className="px-2 py-1.5 font-bold">占比</th>
+              <th className="px-2 py-1.5 font-bold">24h Δ</th>
+              <th className="px-2.5 py-1.5 font-bold">Bull / Bear</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sentimentRows.map((r) => (
+              <tr key={r.sector} className="border-t border-panel-border/60">
+                <td className="px-2.5 py-1.5 font-bold">{r.sector}</td>
+                <td className="px-2 py-1.5 font-mono font-black text-primary">{r.share}</td>
+                <td className={`px-2 py-1.5 font-mono font-bold ${r.deltaTone === "up" ? "text-positive" : "text-negative"}`}>{r.delta}</td>
+                <td className="px-2.5 py-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-negative/30">
+                      <div className="absolute inset-y-0 left-0 rounded-full bg-positive" style={{ width: `${r.bull}%` }} />
+                    </div>
+                    <span className="w-12 text-right font-mono text-[10px] font-bold">
+                      <span className="text-positive">{r.bull}</span>
+                      <span className="text-muted-foreground">/</span>
+                      <span className="text-negative">{100 - r.bull}</span>
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
 
