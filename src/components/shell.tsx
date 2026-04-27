@@ -77,30 +77,30 @@ function UserCenterSheet() {
             <div className="flex items-center gap-3">
               <span className="grid h-12 w-12 place-items-center rounded-full bg-elevated text-lg font-black text-primary ring-2 ring-primary/70 shadow-glow">A</span>
               <div>
-                <SheetTitle className="text-2xl font-black">Alpha Researcher</SheetTitle>
-                <p className="mt-1 text-sm font-bold text-muted-foreground">Pro 试用中 · 6 天后到期</p>
+                <SheetTitle className="text-lg font-black">Alpha Researcher</SheetTitle>
+                <p className="mt-0.5 text-xs font-bold text-muted-foreground">Pro 试用中 · 6 天后到期</p>
               </div>
             </div>
           </SheetHeader>
 
-          <div className="mt-6 rounded-3xl border border-primary/60 bg-primary/15 p-4">
+          <div className="mt-5 rounded-2xl border border-primary/60 bg-primary/15 p-3">
             <div className="flex items-center justify-between">
-              <div><p className="text-sm font-black text-primary">Database Credits</p><p className="mt-1 text-2xl font-black">8,420</p></div>
-              <Link to="/pricing" className="rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground">升级</Link>
+              <div><p className="text-xs font-black text-primary">Database Credits</p><p className="mt-0.5 text-xl font-black">8,420</p></div>
+              <Link to="/pricing" className="rounded-full bg-primary px-3 py-1.5 text-xs font-black text-primary-foreground">升级</Link>
             </div>
           </div>
 
-          <nav className="mt-5 space-y-3">
+          <nav className="mt-4 space-y-2">
             {primaryActions.map((item) => (
-              <Link key={item.label} to={item.to} className="flex items-center gap-3 rounded-2xl border border-panel-border bg-panel p-4 shadow-panel transition hover:border-primary/70">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-elevated text-lg font-black text-primary">{item.icon}</span>
-                <span className="min-w-0 flex-1"><b className="block">{item.label}</b><span className="mt-1 block text-xs font-bold text-muted-foreground">{item.desc}</span></span>
+              <Link key={item.label} to={item.to} className="flex items-center gap-2.5 rounded-xl border border-panel-border bg-panel p-3 shadow-panel transition hover:border-primary/70">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-elevated text-sm font-black text-primary">{item.icon}</span>
+                <span className="min-w-0 flex-1"><b className="block text-[13px]">{item.label}</b><span className="mt-0.5 block text-[11px] font-bold text-muted-foreground">{item.desc}</span></span>
                 <span className="text-primary">›</span>
               </Link>
             ))}
           </nav>
 
-          <div className="mt-auto border-t border-panel-border pt-5 text-xs font-bold text-muted-foreground">
+          <div className="mt-auto border-t border-panel-border pt-4 text-[11px] font-bold text-muted-foreground">
             CryptOracle · 加密社群情绪数据库
           </div>
         </div>
@@ -117,13 +117,13 @@ function BottomNav() {
     { to: "/insight" as const, label: "洞察", icon: <BookIcon /> },
   ];
   return (
-    <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-[430px] -translate-x-1/2 grid-cols-3 border-t border-panel-border bg-background/95 px-6 pt-3 safe-bottom backdrop-blur-xl">
+    <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-[430px] -translate-x-1/2 grid-cols-3 border-t border-panel-border bg-background/95 px-6 pt-2 safe-bottom backdrop-blur-xl">
       {items.map((item) => {
         const active = pathname === item.to;
         return (
-          <Link key={item.to} to={item.to} className={`grid justify-items-center gap-1 transition ${active ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
+          <Link key={item.to} to={item.to} className={`grid justify-items-center gap-0.5 transition ${active ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
             {item.icon}
-            <span className="text-sm font-bold">{item.label}</span>
+            <span className="text-[11px] font-bold">{item.label}</span>
           </Link>
         );
       })}
@@ -133,10 +133,10 @@ function BottomNav() {
 
 export function DataTable({ title, action, to, id, children }: { title: string; action?: string; to?: "/" | "/coins" | "/insight"; id?: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="overflow-hidden rounded-3xl border border-panel-border bg-panel shadow-panel">
-      <div className="flex items-center justify-between p-5">
-        <h2 className="text-2xl font-black">{title}</h2>
-        {action && to ? <Link className="text-sm font-bold text-primary" to={to}>{action} →</Link> : null}
+    <section id={id} className="overflow-hidden rounded-2xl border border-panel-border bg-panel shadow-panel">
+      <div className="flex items-center justify-between px-3.5 py-2.5">
+        <h2 className="text-base font-black tracking-tight">{title}</h2>
+        {action && to ? <Link className="text-[11px] font-bold text-primary" to={to}>{action} →</Link> : null}
       </div>
       <div className="thin-scrollbar overflow-x-auto border-t border-panel-border">{children}</div>
     </section>
@@ -144,11 +144,11 @@ export function DataTable({ title, action, to, id, children }: { title: string; 
 }
 
 export function StickyTh({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <th className={`sticky left-0 z-10 bg-panel px-3 py-3 ${className}`}>{children}</th>;
+  return <th className={`sticky left-0 z-10 bg-panel px-2.5 py-2 text-[11px] uppercase tracking-wide ${className}`}>{children}</th>;
 }
 
 export function StickyTd({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <td className={`sticky left-0 z-10 border-t border-panel-border/70 bg-panel px-3 py-2 ${className}`}>{children}</td>;
+  return <td className={`sticky left-0 z-10 border-t border-panel-border/70 bg-panel px-2.5 py-1.5 ${className}`}>{children}</td>;
 }
 
 export function CoinLink({ symbol, className, children }: { symbol: string; className?: string; children: React.ReactNode }) {
