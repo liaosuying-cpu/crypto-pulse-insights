@@ -36,9 +36,9 @@ export const latest = [
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto min-h-screen max-w-[430px] bg-background pb-28 text-foreground shadow-2xl">
+    <main className="mx-auto min-h-screen max-w-[430px] bg-background pb-24 text-foreground shadow-2xl">
       <TopBar />
-      <div className="space-y-5 px-4 pb-6 pt-28">{children}</div>
+      <div className="space-y-3.5 px-3 pb-5 pt-[68px]">{children}</div>
       <BottomNav />
     </main>
   );
@@ -46,12 +46,12 @@ export function PageShell({ children }: { children: React.ReactNode }) {
 
 function TopBar() {
   return (
-    <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-4 pb-4 pt-5 backdrop-blur-xl">
-      <div className="flex items-center gap-3">
+    <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-3 pb-2.5 pt-3 backdrop-blur-xl">
+      <div className="flex items-center gap-2.5">
         <UserCenterSheet />
-        <label className="flex h-12 flex-1 items-center gap-2 rounded-full border border-panel-border bg-elevated px-4 text-muted-foreground focus-within:border-primary">
+        <label className="flex h-9 flex-1 items-center gap-2 rounded-full border border-panel-border bg-elevated px-3 text-muted-foreground focus-within:border-primary">
           <SearchIcon />
-          <input className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" placeholder="搜索币种 / 指标 / KOL" />
+          <input className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground" placeholder="搜索币种 / 指标 / KOL" />
         </label>
       </div>
     </header>
@@ -68,39 +68,39 @@ function UserCenterSheet() {
 
   return (
     <Sheet>
-      <SheetTrigger className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-elevated ring-2 ring-primary/70 shadow-glow" aria-label="打开个人中心">
-        <span className="text-lg font-black text-primary">A</span>
+      <SheetTrigger className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-elevated ring-2 ring-primary/70 shadow-glow" aria-label="打开个人中心">
+        <span className="text-sm font-black text-primary">A</span>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[86%] max-w-[360px] border-panel-border bg-background p-0 text-foreground">
-        <div className="flex min-h-full flex-col px-5 pb-6 pt-7">
+      <SheetContent side="left" className="w-[84%] max-w-[340px] border-panel-border bg-background p-0 text-foreground">
+        <div className="flex min-h-full flex-col px-4 pb-5 pt-6">
           <SheetHeader className="text-left">
-            <div className="flex items-center gap-4">
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-elevated text-2xl font-black text-primary ring-2 ring-primary/70 shadow-glow">A</span>
+            <div className="flex items-center gap-3">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-elevated text-lg font-black text-primary ring-2 ring-primary/70 shadow-glow">A</span>
               <div>
-                <SheetTitle className="text-2xl font-black">Alpha Researcher</SheetTitle>
-                <p className="mt-1 text-sm font-bold text-muted-foreground">Pro 试用中 · 6 天后到期</p>
+                <SheetTitle className="text-lg font-black">Alpha Researcher</SheetTitle>
+                <p className="mt-0.5 text-xs font-bold text-muted-foreground">Pro 试用中 · 6 天后到期</p>
               </div>
             </div>
           </SheetHeader>
 
-          <div className="mt-6 rounded-3xl border border-primary/60 bg-primary/15 p-4">
+          <div className="mt-5 rounded-2xl border border-primary/60 bg-primary/15 p-3">
             <div className="flex items-center justify-between">
-              <div><p className="text-sm font-black text-primary">Database Credits</p><p className="mt-1 text-2xl font-black">8,420</p></div>
-              <Link to="/pricing" className="rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground">升级</Link>
+              <div><p className="text-xs font-black text-primary">Database Credits</p><p className="mt-0.5 text-xl font-black">8,420</p></div>
+              <Link to="/pricing" className="rounded-full bg-primary px-3 py-1.5 text-xs font-black text-primary-foreground">升级</Link>
             </div>
           </div>
 
-          <nav className="mt-5 space-y-3">
+          <nav className="mt-4 space-y-2">
             {primaryActions.map((item) => (
-              <Link key={item.label} to={item.to} className="flex items-center gap-3 rounded-2xl border border-panel-border bg-panel p-4 shadow-panel transition hover:border-primary/70">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-elevated text-lg font-black text-primary">{item.icon}</span>
-                <span className="min-w-0 flex-1"><b className="block">{item.label}</b><span className="mt-1 block text-xs font-bold text-muted-foreground">{item.desc}</span></span>
+              <Link key={item.label} to={item.to} className="flex items-center gap-2.5 rounded-xl border border-panel-border bg-panel p-3 shadow-panel transition hover:border-primary/70">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-elevated text-sm font-black text-primary">{item.icon}</span>
+                <span className="min-w-0 flex-1"><b className="block text-[13px]">{item.label}</b><span className="mt-0.5 block text-[11px] font-bold text-muted-foreground">{item.desc}</span></span>
                 <span className="text-primary">›</span>
               </Link>
             ))}
           </nav>
 
-          <div className="mt-auto border-t border-panel-border pt-5 text-xs font-bold text-muted-foreground">
+          <div className="mt-auto border-t border-panel-border pt-4 text-[11px] font-bold text-muted-foreground">
             CryptOracle · 加密社群情绪数据库
           </div>
         </div>
@@ -117,13 +117,13 @@ function BottomNav() {
     { to: "/insight" as const, label: "洞察", icon: <BookIcon /> },
   ];
   return (
-    <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-[430px] -translate-x-1/2 grid-cols-3 border-t border-panel-border bg-background/95 px-6 pt-3 safe-bottom backdrop-blur-xl">
+    <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-[430px] -translate-x-1/2 grid-cols-3 border-t border-panel-border bg-background/95 px-6 pt-2 safe-bottom backdrop-blur-xl">
       {items.map((item) => {
         const active = pathname === item.to;
         return (
-          <Link key={item.to} to={item.to} className={`grid justify-items-center gap-1 transition ${active ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
+          <Link key={item.to} to={item.to} className={`grid justify-items-center gap-0.5 transition ${active ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
             {item.icon}
-            <span className="text-sm font-bold">{item.label}</span>
+            <span className="text-[11px] font-bold">{item.label}</span>
           </Link>
         );
       })}
@@ -133,10 +133,10 @@ function BottomNav() {
 
 export function DataTable({ title, action, to, id, children }: { title: string; action?: string; to?: "/" | "/coins" | "/insight"; id?: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="overflow-hidden rounded-3xl border border-panel-border bg-panel shadow-panel">
-      <div className="flex items-center justify-between p-5">
-        <h2 className="text-2xl font-black">{title}</h2>
-        {action && to ? <Link className="text-sm font-bold text-primary" to={to}>{action} →</Link> : null}
+    <section id={id} className="overflow-hidden rounded-2xl border border-panel-border bg-panel shadow-panel">
+      <div className="flex items-center justify-between px-3.5 py-2.5">
+        <h2 className="text-base font-black tracking-tight">{title}</h2>
+        {action && to ? <Link className="text-[11px] font-bold text-primary" to={to}>{action} →</Link> : null}
       </div>
       <div className="thin-scrollbar overflow-x-auto border-t border-panel-border">{children}</div>
     </section>
@@ -144,11 +144,11 @@ export function DataTable({ title, action, to, id, children }: { title: string; 
 }
 
 export function StickyTh({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <th className={`sticky left-0 z-10 bg-panel px-3 py-3 ${className}`}>{children}</th>;
+  return <th className={`sticky left-0 z-10 bg-panel px-2.5 py-2 text-[11px] uppercase tracking-wide ${className}`}>{children}</th>;
 }
 
 export function StickyTd({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <td className={`sticky left-0 z-10 border-t border-panel-border/70 bg-panel px-3 py-2 ${className}`}>{children}</td>;
+  return <td className={`sticky left-0 z-10 border-t border-panel-border/70 bg-panel px-2.5 py-1.5 ${className}`}>{children}</td>;
 }
 
 export function CoinLink({ symbol, className, children }: { symbol: string; className?: string; children: React.ReactNode }) {
@@ -157,7 +157,7 @@ export function CoinLink({ symbol, className, children }: { symbol: string; clas
 
 export function CoinAvatar({ symbol, tone, small }: { symbol: string; tone: Coin["avatar"]; small?: boolean }) {
   const toneClass = { primary: "bg-primary", signal: "bg-signal", warning: "bg-warning", positive: "bg-positive", negative: "bg-negative", secondary: "bg-secondary" }[tone];
-  return <span className={`grid ${small ? "h-7 w-7 text-xs" : "h-9 w-9 text-sm"} place-items-center rounded-full ${toneClass} font-black text-primary-foreground`}>{symbol[0]}</span>;
+  return <span className={`grid ${small ? "h-6 w-6 text-[10px]" : "h-7 w-7 text-[11px]"} place-items-center rounded-full ${toneClass} font-black text-primary-foreground`}>{symbol[0]}</span>;
 }
 
 export function Sparkline({ className }: { className: string }) {
@@ -169,10 +169,10 @@ export function DualSparkline() {
 }
 
 export function FooterBrand() {
-  return <footer className="py-10 text-center text-muted-foreground"><div className="mb-2 inline-flex items-center gap-3 text-xl font-black lowercase text-foreground"><span className="grid h-10 w-10 place-items-center rounded-xl border border-primary/60 bg-primary/15 text-primary">co</span>cryptoracle</div><p>Your Crypto Markets Dashboard, Optimized for Alpha</p></footer>;
+  return <footer className="py-6 text-center text-[11px] text-muted-foreground"><div className="mb-1 inline-flex items-center gap-2 text-base font-black lowercase text-foreground"><span className="grid h-7 w-7 place-items-center rounded-lg border border-primary/60 bg-primary/15 text-primary">co</span>cryptoracle</div><p>Your Crypto Markets Dashboard, Optimized for Alpha</p></footer>;
 }
 
-function SearchIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>; }
-function PulseIcon() { return <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>; }
-function CoinIcon() { return <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="8" /><path d="M8 12h8M12 8v8" /></svg>; }
-function BookIcon() { return <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z" /><path d="M4 5.5A2.5 2.5 0 0 1 6.5 8H20" /></svg>; }
+function SearchIcon() { return <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>; }
+function PulseIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>; }
+function CoinIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="8" /><path d="M8 12h8M12 8v8" /></svg>; }
+function BookIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z" /><path d="M4 5.5A2.5 2.5 0 0 1 6.5 8H20" /></svg>; }
