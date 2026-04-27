@@ -1,4 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AlertTriangle, Info } from "lucide-react";
 import { PageShell, DataTable, StickyTh, StickyTd, CoinLink, CoinAvatar, Sparkline, coins } from "@/components/shell";
 
 export const Route = createFileRoute("/")({
@@ -26,10 +29,80 @@ function MarketPage() {
     <PageShell>
       <h1 className="sr-only">行情</h1>
       <NewsTicker />
+      <IndexIntro />
+      <LiveSentimentTicker />
       <AivixChart />
       <MarketRankTable />
       <KolDiscussionTable />
     </PageShell>
+  );
+}
+
+function IndexIntro() {
+  return (
+    <section className="rounded-2xl border border-panel-border bg-panel p-3 shadow-panel">
+      <div className="flex items-start justify-between gap-2.5">
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex items-center gap-1.5">
+            <Info className="h-3 w-3 text-primary" />
+            <h2 className="text-[12px] font-black tracking-tight">指数简介</h2>
+          </div>
+          <p className="text-[11px] leading-relaxed text-muted-foreground">
+            <b className="text-foreground">CO10 index</b> 针对加密市场高波动特征提出的市值加权基准指数；
+            <b className="text-foreground"> CO10 AIVIX</b> 专注私域数据，捕捉深层社群情绪波动，提供先导性预警。
+          </p>
+        </div>
+        <Link to="/index-detail" className="shrink-0 rounded-full border border-primary/60 bg-primary/10 px-2.5 py-1 text-[10px] font-bold text-primary">详情 →</Link>
+      </div>
+    </section>
+  );
+}
+
+function useTicking(initial: number, range: number) {
+  const [v, setV] = useState(initial);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setV((prev) => {
+        const delta = (Math.random() - 0.5) * range;
+        const next = prev + delta;
+        return Math.max(0, Math.min(100, next));
+      });
+    }, 1500);
+    return () => clearInterval(id);
+  }, [range]);
+  return v;
+}
+
+function LiveSentimentTicker() {
+  const fearGreed = useTicking(62, 1.8);
+  const aivix = useTicking(74.3, 1.2);
+  const social = useTicking(48, 2.4);
+  const dominance = useTicking(55.1, 0.6);
+  const items = [
+    { label: "Fear & Greed", value: fearGreed, suffix: "", tone: "primary" as const },
+    { label: "AIVIX", value: aivix, suffix: "", tone: "signal" as const },
+    { label: "Social Vol", value: social, suffix: "%", tone: "positive" as const },
+    { label: "BTC.D", value: dominance, suffix: "%", tone: "warning" as const },
+  ];
+  return (
+    <section className="rounded-2xl border border-panel-border bg-panel p-3 shadow-panel">
+      <div className="mb-2 flex items-center gap-1.5">
+        <span className="h-1.5 w-1.5 rounded-full bg-positive pulse-glow" />
+        <h2 className="text-[11px] font-black uppercase tracking-wider text-muted-foreground">宏观情绪 · 实时</h2>
+      </div>
+      <div className="grid grid-cols-4 gap-2">
+        {items.map((it) => (
+          <div key={it.label} className="rounded-lg border border-panel-border/70 bg-background/40 p-2">
+            <div className="text-[9px] uppercase tracking-wide text-muted-foreground">{it.label}</div>
+            <div className={`mt-0.5 font-mono text-[14px] font-black tabular-nums ${
+              it.tone === "primary" ? "text-primary" : it.tone === "signal" ? "text-signal" : it.tone === "positive" ? "text-positive" : "text-warning"
+            }`}>
+              {it.value.toFixed(1)}{it.suffix}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
