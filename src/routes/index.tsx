@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
-import { PageShell, DataTable, StickyTh, StickyTd, CoinLink, CoinAvatar, Sparkline, coins } from "@/components/shell";
+import { PageShell, CoinLink, CoinAvatar, Sparkline, coins } from "@/components/shell";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,10 +19,52 @@ function MarketPage() {
     <PageShell>
       <h1 className="sr-only">行情</h1>
       <NewsTicker />
+      <KolQuotes />
       <AivixChart />
       <RankingTabs />
       <NewsTabs />
     </PageShell>
+  );
+}
+
+/* ────────────── 社群 KOL 热门发言（左右滑动） ────────────── */
+const kolQuotes = [
+  { name: "Arthur", handle: "@Arthur_0x", avatar: "primary" as const, time: "5m", text: "BTC 这波拉升是空头回补,现货并没有跟上,短线谨慎。", coin: "BTC", tone: "bear" as const },
+  { name: "CL207", handle: "@CL207", avatar: "signal" as const, time: "12m", text: "SOL 生态的 meme 轮动还没结束,JUP 的交易量上来了。", coin: "SOL", tone: "bull" as const },
+  { name: "CryptoNova", handle: "@cryptonova", avatar: "warning" as const, time: "23m", text: "ETH/BTC 汇率跌破关键位,ETH 可能还要再等一轮。", coin: "ETH", tone: "bear" as const },
+  { name: "ChainLens", handle: "@chainlens", avatar: "positive" as const, time: "41m", text: "链上大额地址在过去 4 小时吸筹 STRK,值得关注。", coin: "STRK", tone: "bull" as const },
+  { name: "MKT Pulse", handle: "@mktpulse", avatar: "negative" as const, time: "1h", text: "WIF 社群情绪异常亢奋,历史上这种情况往往对应短期顶。", coin: "WIF", tone: "bear" as const },
+  { name: "DeFi Dad", handle: "@DeFi_Dad", avatar: "secondary" as const, time: "1h", text: "RWA 赛道真实收益仍在上升,是这轮被低估的板块。", coin: "RWA", tone: "bull" as const },
+];
+
+function KolQuotes() {
+  return (
+    <section className="rounded-2xl border border-panel-border bg-panel p-3 shadow-panel">
+      <div className="mb-2 flex items-center justify-between">
+        <div>
+          <h2 className="text-[13px] font-black tracking-tight">KOL 热门发言</h2>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">社群实时声音 · 左右滑动</p>
+        </div>
+        <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[9.5px] font-black text-primary">LIVE</span>
+      </div>
+      <div className="thin-scrollbar -mx-3 flex snap-x snap-mandatory gap-2 overflow-x-auto px-3 pb-1">
+        {kolQuotes.map((q) => (
+          <article key={q.handle} className="w-[240px] shrink-0 snap-start rounded-xl border border-panel-border bg-background/55 p-2.5">
+            <header className="flex items-center gap-2">
+              <CoinAvatar symbol={q.name} tone={q.avatar} small />
+              <div className="min-w-0 flex-1 leading-tight">
+                <b className="block truncate text-[11.5px]">{q.name}</b>
+                <span className="block truncate text-[10px] text-muted-foreground">{q.handle} · {q.time}</span>
+              </div>
+              <span className={`shrink-0 rounded px-1.5 py-0.5 text-[9px] font-black ${q.tone === "bull" ? "bg-positive/15 text-positive" : "bg-negative/15 text-negative"}`}>
+                {q.tone === "bull" ? "多" : "空"} · {q.coin}
+              </span>
+            </header>
+            <p className="mt-1.5 text-[11.5px] leading-snug text-foreground">{q.text}</p>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -274,69 +316,72 @@ function RankingTabs() {
         </div>
         <Link to={tab === "coins" ? "/coins" : "/insight"} className="text-[11px] font-bold text-primary">查看更多 →</Link>
       </div>
-      <div className="thin-scrollbar overflow-x-auto border-t border-panel-border">
+      <div className="border-t border-panel-border">
         {tab === "coins" ? (
-          <table className="w-[560px] border-separate border-spacing-0 text-left text-[12px]">
+          <table className="w-full border-separate border-spacing-0 text-left text-[12px]">
             <thead className="text-[10px] uppercase tracking-wide text-muted-foreground">
               <tr>
-                <StickyTh className="w-14">#</StickyTh>
-                <StickyTh className="left-14 w-32">币种</StickyTh>
-                <th className="px-2.5 py-2">热度</th>
-                <th className="px-2.5 py-2">价格</th>
-                <th className="px-2.5 py-2">趋势</th>
+                <th className="px-2 py-2 w-[68px]">#/热度</th>
+                <th className="px-2 py-2">币种</th>
+                <th className="px-2 py-2 text-right">价格</th>
+                <th className="px-2 py-2 w-[84px] text-right">趋势</th>
               </tr>
             </thead>
             <tbody>
               {coins.map((c, i) => (
                 <tr key={c.symbol} className="border-t border-panel-border/70">
-                  <StickyTd>
-                    <span className="inline-flex items-center gap-1">
+                  <td className="border-t border-panel-border/70 px-2 py-1.5">
+                    <div className="flex items-center gap-1">
                       <b className="tabular-nums">{c.rank}</b>
                       <RankShift rank={c.rank} prev={coinPrev[i]} />
-                    </span>
-                  </StickyTd>
-                  <StickyTd className="left-14">
-                    <CoinLink symbol={c.symbol} className="flex items-center gap-2 py-2">
+                    </div>
+                    <div className="text-[10px] font-black text-primary tabular-nums leading-tight">{c.heat}</div>
+                  </td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5">
+                    <CoinLink symbol={c.symbol} className="flex items-center gap-2">
                       <CoinAvatar symbol={c.symbol} tone={c.avatar} />
-                      <span className="leading-tight"><b className="block">{c.symbol}</b><span className="text-[10px] text-muted-foreground">{c.name}</span></span>
+                      <span className="min-w-0 leading-tight">
+                        <b className="block truncate">{c.symbol}</b>
+                        <span className="block truncate text-[10px] text-muted-foreground">{c.name}</span>
+                      </span>
                     </CoinLink>
-                  </StickyTd>
-                  <td className="px-2.5 py-1.5 font-black text-primary tabular-nums">{c.heat}</td>
-                  <td className="px-2.5 py-1.5 font-bold tabular-nums">{c.price}</td>
-                  <td className="px-2.5 py-1.5"><Sparkline className={`h-6 w-20 ${c.tone === "up" ? "text-positive" : "text-negative"}`} /></td>
+                  </td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right font-bold tabular-nums">{c.price}</td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right">
+                    <Sparkline className={`ml-auto h-6 w-16 ${c.tone === "up" ? "text-positive" : "text-negative"}`} />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <table className="w-[560px] border-separate border-spacing-0 text-left text-[12px]">
+          <table className="w-full border-separate border-spacing-0 text-left text-[12px]">
             <thead className="text-[10px] uppercase tracking-wide text-muted-foreground">
               <tr>
-                <StickyTh className="w-14">#</StickyTh>
-                <StickyTh className="left-14 w-36">KOL</StickyTh>
-                <th className="px-2.5 py-2">粉丝</th>
-                <th className="px-2.5 py-2">热度</th>
-                <th className="px-2.5 py-2">讨论币种</th>
+                <th className="px-2 py-2 w-[68px]">#/热度</th>
+                <th className="px-2 py-2">KOL</th>
+                <th className="px-2 py-2 text-right">粉丝</th>
+                <th className="px-2 py-2 text-right">讨论</th>
               </tr>
             </thead>
             <tbody>
               {kolRows.map((k) => (
                 <tr key={k.name} className="border-t border-panel-border/70">
-                  <StickyTd>
-                    <span className="inline-flex items-center gap-1">
+                  <td className="border-t border-panel-border/70 px-2 py-1.5">
+                    <div className="flex items-center gap-1">
                       <b className="tabular-nums">{k.rank}</b>
                       <RankShift rank={k.rank} prev={k.prev} />
-                    </span>
-                  </StickyTd>
-                  <StickyTd className="left-14">
-                    <div className="flex items-center gap-2 py-2">
-                      <CoinAvatar symbol={k.name} tone={k.avatar} />
-                      <b>{k.name}</b>
                     </div>
-                  </StickyTd>
-                  <td className="px-2.5 py-1.5 tabular-nums">{k.followers}</td>
-                  <td className="px-2.5 py-1.5 font-black text-primary tabular-nums">{k.heat}</td>
-                  <td className="px-2.5 py-1.5 text-muted-foreground">{k.coins}</td>
+                    <div className="text-[10px] font-black text-primary tabular-nums leading-tight">{k.heat}</div>
+                  </td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5">
+                    <div className="flex items-center gap-2">
+                      <CoinAvatar symbol={k.name} tone={k.avatar} />
+                      <b className="truncate">{k.name}</b>
+                    </div>
+                  </td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right tabular-nums">{k.followers}</td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right text-[11px] text-muted-foreground">{k.coins}</td>
                 </tr>
               ))}
             </tbody>

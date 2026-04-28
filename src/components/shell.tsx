@@ -159,9 +159,9 @@ function UserCenterSheet() {
 function BottomNav() {
   const { pathname } = useLocation();
   const items = [
-    { to: "/" as const, label: "行情", icon: <PulseIcon /> },
-    { to: "/coins" as const, label: "币种", icon: <CoinIcon /> },
-    { to: "/insight" as const, label: "洞察", icon: <BookIcon /> },
+    { to: "/" as const, label: "首页", icon: <PulseIcon /> },
+    { to: "/coins" as const, label: "自选", icon: <CoinIcon /> },
+    { to: "/insight" as const, label: "行情", icon: <BookIcon /> },
   ];
   return (
     <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-[430px] -translate-x-1/2 grid-cols-3 border-t border-panel-border bg-background/95 px-6 pt-2 safe-bottom backdrop-blur-xl">
