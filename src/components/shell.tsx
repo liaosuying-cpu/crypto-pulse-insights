@@ -48,12 +48,16 @@ export function PageShell({ children }: { children: React.ReactNode }) {
 function TopBar() {
   return (
     <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-3 pb-2 pt-3 backdrop-blur-xl">
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2">
         <UserCenterSheet />
         <label className="flex h-9 flex-1 items-center gap-2 rounded-full border border-panel-border bg-elevated px-3 text-muted-foreground focus-within:border-primary">
           <SearchIcon />
           <input className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground" placeholder="搜索币种 / 指标 / KOL" />
         </label>
+        <button type="button" aria-label="消息中心" className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full border border-panel-border bg-elevated text-muted-foreground transition hover:border-primary/70 hover:text-primary">
+          <BellIcon />
+          <span className="absolute right-1.5 top-1.5 grid h-3.5 min-w-[14px] place-items-center rounded-full bg-primary px-1 text-[9px] font-black text-primary-foreground">3</span>
+        </button>
       </div>
       <LiveStatusBar />
     </header>
