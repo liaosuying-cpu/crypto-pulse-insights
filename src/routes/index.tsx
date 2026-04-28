@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
-import { PageShell, DataTable, StickyTh, StickyTd, CoinLink, CoinAvatar, Sparkline, coins } from "@/components/shell";
+import { PageShell, DataTable, CoinLink, CoinAvatar, Sparkline, coins } from "@/components/shell";
 
 export const Route = createFileRoute("/")({
   head: () => ({
