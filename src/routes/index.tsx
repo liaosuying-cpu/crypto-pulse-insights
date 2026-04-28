@@ -316,69 +316,72 @@ function RankingTabs() {
         </div>
         <Link to={tab === "coins" ? "/coins" : "/insight"} className="text-[11px] font-bold text-primary">查看更多 →</Link>
       </div>
-      <div className="thin-scrollbar overflow-x-auto border-t border-panel-border">
+      <div className="border-t border-panel-border">
         {tab === "coins" ? (
-          <table className="w-[560px] border-separate border-spacing-0 text-left text-[12px]">
+          <table className="w-full border-separate border-spacing-0 text-left text-[12px]">
             <thead className="text-[10px] uppercase tracking-wide text-muted-foreground">
               <tr>
-                <StickyTh className="w-14">#</StickyTh>
-                <StickyTh className="left-14 w-32">币种</StickyTh>
-                <th className="px-2.5 py-2">热度</th>
-                <th className="px-2.5 py-2">价格</th>
-                <th className="px-2.5 py-2">趋势</th>
+                <th className="px-2 py-2 w-[68px]">#/热度</th>
+                <th className="px-2 py-2">币种</th>
+                <th className="px-2 py-2 text-right">价格</th>
+                <th className="px-2 py-2 w-[84px] text-right">趋势</th>
               </tr>
             </thead>
             <tbody>
               {coins.map((c, i) => (
                 <tr key={c.symbol} className="border-t border-panel-border/70">
-                  <StickyTd>
-                    <span className="inline-flex items-center gap-1">
+                  <td className="border-t border-panel-border/70 px-2 py-1.5">
+                    <div className="flex items-center gap-1">
                       <b className="tabular-nums">{c.rank}</b>
                       <RankShift rank={c.rank} prev={coinPrev[i]} />
-                    </span>
-                  </StickyTd>
-                  <StickyTd className="left-14">
-                    <CoinLink symbol={c.symbol} className="flex items-center gap-2 py-2">
+                    </div>
+                    <div className="text-[10px] font-black text-primary tabular-nums leading-tight">{c.heat}</div>
+                  </td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5">
+                    <CoinLink symbol={c.symbol} className="flex items-center gap-2">
                       <CoinAvatar symbol={c.symbol} tone={c.avatar} />
-                      <span className="leading-tight"><b className="block">{c.symbol}</b><span className="text-[10px] text-muted-foreground">{c.name}</span></span>
+                      <span className="min-w-0 leading-tight">
+                        <b className="block truncate">{c.symbol}</b>
+                        <span className="block truncate text-[10px] text-muted-foreground">{c.name}</span>
+                      </span>
                     </CoinLink>
-                  </StickyTd>
-                  <td className="px-2.5 py-1.5 font-black text-primary tabular-nums">{c.heat}</td>
-                  <td className="px-2.5 py-1.5 font-bold tabular-nums">{c.price}</td>
-                  <td className="px-2.5 py-1.5"><Sparkline className={`h-6 w-20 ${c.tone === "up" ? "text-positive" : "text-negative"}`} /></td>
+                  </td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right font-bold tabular-nums">{c.price}</td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right">
+                    <Sparkline className={`ml-auto h-6 w-16 ${c.tone === "up" ? "text-positive" : "text-negative"}`} />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <table className="w-[560px] border-separate border-spacing-0 text-left text-[12px]">
+          <table className="w-full border-separate border-spacing-0 text-left text-[12px]">
             <thead className="text-[10px] uppercase tracking-wide text-muted-foreground">
               <tr>
-                <StickyTh className="w-14">#</StickyTh>
-                <StickyTh className="left-14 w-36">KOL</StickyTh>
-                <th className="px-2.5 py-2">粉丝</th>
-                <th className="px-2.5 py-2">热度</th>
-                <th className="px-2.5 py-2">讨论币种</th>
+                <th className="px-2 py-2 w-[68px]">#/热度</th>
+                <th className="px-2 py-2">KOL</th>
+                <th className="px-2 py-2 text-right">粉丝</th>
+                <th className="px-2 py-2 text-right">讨论</th>
               </tr>
             </thead>
             <tbody>
               {kolRows.map((k) => (
                 <tr key={k.name} className="border-t border-panel-border/70">
-                  <StickyTd>
-                    <span className="inline-flex items-center gap-1">
+                  <td className="border-t border-panel-border/70 px-2 py-1.5">
+                    <div className="flex items-center gap-1">
                       <b className="tabular-nums">{k.rank}</b>
                       <RankShift rank={k.rank} prev={k.prev} />
-                    </span>
-                  </StickyTd>
-                  <StickyTd className="left-14">
-                    <div className="flex items-center gap-2 py-2">
-                      <CoinAvatar symbol={k.name} tone={k.avatar} />
-                      <b>{k.name}</b>
                     </div>
-                  </StickyTd>
-                  <td className="px-2.5 py-1.5 tabular-nums">{k.followers}</td>
-                  <td className="px-2.5 py-1.5 font-black text-primary tabular-nums">{k.heat}</td>
-                  <td className="px-2.5 py-1.5 text-muted-foreground">{k.coins}</td>
+                    <div className="text-[10px] font-black text-primary tabular-nums leading-tight">{k.heat}</div>
+                  </td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5">
+                    <div className="flex items-center gap-2">
+                      <CoinAvatar symbol={k.name} tone={k.avatar} />
+                      <b className="truncate">{k.name}</b>
+                    </div>
+                  </td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right tabular-nums">{k.followers}</td>
+                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right text-[11px] text-muted-foreground">{k.coins}</td>
                 </tr>
               ))}
             </tbody>
