@@ -181,18 +181,11 @@ function AivixChart() {
         <Link to="/coins" className="shrink-0 rounded-full border border-primary/50 bg-primary/10 px-2.5 py-1 text-[10px] font-black text-primary">详情 →</Link>
       </div>
 
-      {/* timeframe selector + zoom */}
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <div className="flex gap-1 overflow-x-auto text-[11px] font-bold">
-          {TIMEFRAMES.map((t) => (
-            <button key={t} onClick={() => setTf(t)} className={t === tf ? "rounded-md bg-primary px-2.5 py-1 text-primary-foreground" : "rounded-md border border-panel-border px-2.5 py-1 text-muted-foreground"}>{t}</button>
-          ))}
-        </div>
-        <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-          <button onClick={() => setZoom((z) => Math.max(0.6, z - 0.2))} className="grid h-6 w-6 place-items-center rounded-md border border-panel-border">−</button>
-          <span className="w-8 text-center font-bold tabular-nums">{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom((z) => Math.min(2.4, z + 0.2))} className="grid h-6 w-6 place-items-center rounded-md border border-panel-border">+</button>
-        </div>
+      {/* timeframe selector */}
+      <div className="mb-2 grid grid-cols-6 gap-1 text-[11px] font-bold">
+        {TIMEFRAMES.map((t) => (
+          <button key={t} onClick={() => setTf(t)} className={t === tf ? "rounded-md bg-primary py-1 text-center text-primary-foreground" : "rounded-md border border-panel-border py-1 text-center text-muted-foreground"}>{t}</button>
+        ))}
       </div>
 
       {/* chart 1: line + bars */}
