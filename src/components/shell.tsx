@@ -48,12 +48,16 @@ export function PageShell({ children }: { children: React.ReactNode }) {
 function TopBar() {
   return (
     <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-3 pb-2 pt-3 backdrop-blur-xl">
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2">
         <UserCenterSheet />
         <label className="flex h-9 flex-1 items-center gap-2 rounded-full border border-panel-border bg-elevated px-3 text-muted-foreground focus-within:border-primary">
           <SearchIcon />
           <input className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground" placeholder="搜索币种 / 指标 / KOL" />
         </label>
+        <button type="button" aria-label="消息中心" className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full border border-panel-border bg-elevated text-muted-foreground transition hover:border-primary/70 hover:text-primary">
+          <BellIcon />
+          <span className="absolute right-1.5 top-1.5 grid h-3.5 min-w-[14px] place-items-center rounded-full bg-primary px-1 text-[9px] font-black text-primary-foreground">3</span>
+        </button>
       </div>
       <LiveStatusBar />
     </header>
@@ -219,3 +223,4 @@ function SearchIcon() { return <svg className="h-4 w-4" viewBox="0 0 24 24" fill
 function PulseIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>; }
 function CoinIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="8" /><path d="M8 12h8M12 8v8" /></svg>; }
 function BookIcon() { return <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z" /><path d="M4 5.5A2.5 2.5 0 0 1 6.5 8H20" /></svg>; }
+function BellIcon() { return <svg className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 8a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" /><path d="M10 19a2 2 0 0 0 4 0" /></svg>; }
