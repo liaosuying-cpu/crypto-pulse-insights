@@ -111,7 +111,7 @@ function TradingOpportunities() {
                   <span className="text-[12.5px] font-black">{o.symbol}</span>
                   <span
                     className={`rounded px-1.5 py-0.5 text-[9.5px] font-bold ${
-                      up ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"
+                      up ? "bg-positive/15 text-positive" : "bg-negative/15 text-negative"
                     }`}
                   >
                     {o.factor} {up ? "↑" : "↓"}
@@ -124,7 +124,7 @@ function TradingOpportunities() {
                 <div className="text-[11.5px] font-bold tabular-nums">${o.price.toLocaleString()}</div>
                 <div
                   className={`text-[10px] font-bold tabular-nums ${
-                    priceUp ? "text-success" : "text-destructive"
+                    priceUp ? "text-positive" : "text-negative"
                   }`}
                 >
                   {priceUp ? "+" : ""}
