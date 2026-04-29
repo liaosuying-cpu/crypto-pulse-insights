@@ -27,31 +27,33 @@ function CoinsPage() {
   );
 }
 
-/* ============== 讨论占有率 ============== */
-const MIND_SECTORS = [
-  { key: "ai", label: "AI", color: "oklch(0.72 0.18 280)" },
-  { key: "meme", label: "Meme", color: "oklch(0.78 0.19 25)" },
-  { key: "defi", label: "DeFi", color: "oklch(0.74 0.16 165)" },
-  { key: "l1", label: "L1", color: "oklch(0.72 0.14 230)" },
-  { key: "rwa", label: "RWA", color: "oklch(0.75 0.14 90)" },
+/* ============== 讨论占有率（按币种） ============== */
+const MIND_COINS = [
+  { key: "btc", label: "BTC", color: "oklch(0.78 0.17 60)" },
+  { key: "eth", label: "ETH", color: "oklch(0.72 0.14 230)" },
+  { key: "sol", label: "SOL", color: "oklch(0.72 0.18 280)" },
+  { key: "doge", label: "DOGE", color: "oklch(0.78 0.19 25)" },
+  { key: "pepe", label: "PEPE", color: "oklch(0.74 0.16 145)" },
+  { key: "others", label: "其他", color: "oklch(0.55 0.02 250)" },
 ] as const;
 
 const mindshareData = [
-  { t: "00:00", ai: 18, meme: 32, defi: 16, l1: 22, rwa: 12 },
-  { t: "04:00", ai: 21, meme: 30, defi: 16, l1: 21, rwa: 12 },
-  { t: "08:00", ai: 25, meme: 28, defi: 15, l1: 21, rwa: 11 },
-  { t: "12:00", ai: 29, meme: 25, defi: 15, l1: 20, rwa: 11 },
-  { t: "16:00", ai: 33, meme: 22, defi: 14, l1: 20, rwa: 11 },
-  { t: "20:00", ai: 36, meme: 19, defi: 14, l1: 20, rwa: 11 },
-  { t: "现在", ai: 38, meme: 17, defi: 14, l1: 20, rwa: 11 },
+  { t: "00:00", btc: 30, eth: 22, sol: 14, doge: 12, pepe: 10, others: 12 },
+  { t: "04:00", btc: 29, eth: 22, sol: 16, doge: 11, pepe: 11, others: 11 },
+  { t: "08:00", btc: 28, eth: 21, sol: 18, doge: 10, pepe: 12, others: 11 },
+  { t: "12:00", btc: 27, eth: 20, sol: 21, doge: 9, pepe: 12, others: 11 },
+  { t: "16:00", btc: 26, eth: 20, sol: 23, doge: 8, pepe: 13, others: 10 },
+  { t: "20:00", btc: 25, eth: 19, sol: 26, doge: 7, pepe: 13, others: 10 },
+  { t: "现在", btc: 24, eth: 19, sol: 28, doge: 7, pepe: 12, others: 10 },
 ];
 
 const sentimentRows = [
-  { sector: "AI", share: "38%", delta: "+11.4%", bull: 72, deltaTone: "up" as const },
-  { sector: "Meme", share: "17%", delta: "-15.0%", bull: 41, deltaTone: "down" as const },
-  { sector: "DeFi", share: "14%", delta: "-2.1%", bull: 58, deltaTone: "down" as const },
-  { sector: "L1", share: "20%", delta: "-1.0%", bull: 63, deltaTone: "down" as const },
-  { sector: "RWA", share: "11%", delta: "-0.8%", bull: 67, deltaTone: "down" as const },
+  { sector: "BTC", share: "24%", delta: "-6.0%", bull: 68, deltaTone: "down" as const },
+  { sector: "ETH", share: "19%", delta: "-3.0%", bull: 61, deltaTone: "down" as const },
+  { sector: "SOL", share: "28%", delta: "+14.0%", bull: 81, deltaTone: "up" as const },
+  { sector: "DOGE", share: "7%", delta: "-5.0%", bull: 47, deltaTone: "down" as const },
+  { sector: "PEPE", share: "12%", delta: "+2.0%", bull: 54, deltaTone: "up" as const },
+  { sector: "其他", share: "10%", delta: "-2.0%", bull: 55, deltaTone: "down" as const },
 ];
 
 function MindshareSection() {
@@ -60,13 +62,13 @@ function MindshareSection() {
       <div className="mb-2 flex items-end justify-between">
         <div>
           <h2 className="text-base font-black tracking-tight">讨论占有率</h2>
-          <p className="mt-0.5 text-[10.5px] leading-tight text-muted-foreground">全网加密讨论 · 板块占比 · 24h（AI 正在挤压 Meme）</p>
+          <p className="mt-0.5 text-[10.5px] leading-tight text-muted-foreground">全网加密讨论 · 币种占比 · 24h（SOL 正在挤压 BTC）</p>
         </div>
-        <span className="rounded-full border border-positive/50 bg-positive/10 px-2 py-0.5 text-[10px] font-bold text-positive">AI ↑ 11.4%</span>
+        <span className="rounded-full border border-positive/50 bg-positive/10 px-2 py-0.5 text-[10px] font-bold text-positive">SOL ↑ 14.0%</span>
       </div>
 
       <div className="mb-2 flex flex-wrap gap-x-2.5 gap-y-1">
-        {MIND_SECTORS.map((s) => (
+        {MIND_COINS.map((s) => (
           <span key={s.key} className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground">
             <span className="h-2 w-2 rounded-sm" style={{ background: s.color }} />
             {s.label}
@@ -78,7 +80,7 @@ function MindshareSection() {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={mindshareData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }} stackOffset="expand">
             <defs>
-              {MIND_SECTORS.map((s) => (
+              {MIND_COINS.map((s) => (
                 <linearGradient key={s.key} id={`g-${s.key}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={s.color} stopOpacity={0.95} />
                   <stop offset="100%" stopColor={s.color} stopOpacity={0.55} />
@@ -91,7 +93,7 @@ function MindshareSection() {
               contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 11, padding: "6px 8px" }}
               formatter={(v: number, n: string) => [`${(v * 100).toFixed(1)}%`, n.toUpperCase()]}
             />
-            {MIND_SECTORS.map((s) => (
+            {MIND_COINS.map((s) => (
               <Area key={s.key} type="monotone" dataKey={s.key} stackId="1" stroke={s.color} strokeWidth={1} fill={`url(#g-${s.key})`} />
             ))}
           </AreaChart>
