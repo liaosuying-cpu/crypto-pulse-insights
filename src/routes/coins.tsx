@@ -16,12 +16,15 @@ export const Route = createFileRoute("/coins")({
 });
 
 function CoinsPage() {
+  const [watchlist, setWatchlist] = useState<string[]>(coins.map((c) => c.symbol));
+  const toggleWatch = (sym: string) =>
+    setWatchlist((prev) => (prev.includes(sym) ? prev.filter((s) => s !== sym) : [...prev, sym]));
   return (
     <PageShell>
       <h1 className="sr-only">自选</h1>
       <MindshareSection />
-      <DiscoverSection />
-      <WatchlistSection />
+      <WatchlistSection watchlist={watchlist} onToggle={toggleWatch} />
+      <DiscoverSection watchlist={watchlist} onToggle={toggleWatch} />
       <FooterBrand />
     </PageShell>
   );
@@ -57,6 +60,7 @@ const sentimentRows = [
 ];
 
 function MindshareSection() {
+  const [expanded, setExpanded] = useState(false);
   return (
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
       <div className="mb-2 flex items-end justify-between">
@@ -76,7 +80,7 @@ function MindshareSection() {
         ))}
       </div>
 
-      <div className="h-[150px] w-full">
+      <div className={`${expanded ? "h-[150px]" : "h-[80px]"} w-full transition-all`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={mindshareData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }} stackOffset="expand">
             <defs>
@@ -100,39 +104,48 @@ function MindshareSection() {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-2.5 overflow-hidden rounded-xl border border-panel-border bg-background/45">
-        <table className="w-full text-left text-[11px]">
-          <thead className="text-[9.5px] uppercase tracking-wide text-muted-foreground">
-            <tr>
-              <th className="px-2.5 py-1.5 font-bold">板块</th>
-              <th className="px-2 py-1.5 font-bold">占比</th>
-              <th className="px-2 py-1.5 font-bold">24h Δ</th>
-              <th className="px-2.5 py-1.5 font-bold">好/坏名声</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sentimentRows.map((r) => (
-              <tr key={r.sector} className="border-t border-panel-border/60">
-                <td className="px-2.5 py-1.5 font-bold">{r.sector}</td>
-                <td className="px-2 py-1.5 font-mono font-black text-primary">{r.share}</td>
-                <td className={`px-2 py-1.5 font-mono font-bold ${r.deltaTone === "up" ? "text-positive" : "text-negative"}`}>{r.delta}</td>
-                <td className="px-2.5 py-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-negative/30">
-                      <div className="absolute inset-y-0 left-0 rounded-full bg-positive" style={{ width: `${r.bull}%` }} />
-                    </div>
-                    <span className="w-12 text-right font-mono text-[10px] font-bold">
-                      <span className="text-positive">{r.bull}</span>
-                      <span className="text-muted-foreground">/</span>
-                      <span className="text-negative">{100 - r.bull}</span>
-                    </span>
-                  </div>
-                </td>
+      {expanded && (
+        <div className="mt-2.5 overflow-hidden rounded-xl border border-panel-border bg-background/45">
+          <table className="w-full text-left text-[11px]">
+            <thead className="text-[9.5px] uppercase tracking-wide text-muted-foreground">
+              <tr>
+                <th className="px-2.5 py-1.5 font-bold">板块</th>
+                <th className="px-2 py-1.5 font-bold">占比</th>
+                <th className="px-2 py-1.5 font-bold">24h Δ</th>
+                <th className="px-2.5 py-1.5 font-bold">好/坏名声</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {sentimentRows.map((r) => (
+                <tr key={r.sector} className="border-t border-panel-border/60">
+                  <td className="px-2.5 py-1.5 font-bold">{r.sector}</td>
+                  <td className="px-2 py-1.5 font-mono font-black text-primary">{r.share}</td>
+                  <td className={`px-2 py-1.5 font-mono font-bold ${r.deltaTone === "up" ? "text-positive" : "text-negative"}`}>{r.delta}</td>
+                  <td className="px-2.5 py-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-negative/30">
+                        <div className="absolute inset-y-0 left-0 rounded-full bg-positive" style={{ width: `${r.bull}%` }} />
+                      </div>
+                      <span className="w-12 text-right font-mono text-[10px] font-bold">
+                        <span className="text-positive">{r.bull}</span>
+                        <span className="text-muted-foreground">/</span>
+                        <span className="text-negative">{100 - r.bull}</span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className="mt-2 flex w-full items-center justify-center gap-1 rounded-lg border border-panel-border bg-background/40 py-1 text-[10.5px] font-bold text-muted-foreground"
+      >
+        {expanded ? "收起 ▲" : "展开详情 ▼"}
+      </button>
     </section>
   );
 }
@@ -188,7 +201,7 @@ const SORT_FIELDS = [
 type SortKey = (typeof SORT_FIELDS)[number]["key"];
 type FilterMap = Partial<Record<SortKey, { min: number; max: number }>>;
 
-function DiscoverSection() {
+function DiscoverSection({ watchlist, onToggle }: { watchlist: string[]; onToggle: (sym: string) => void }) {
   const [tab, setTab] = useState<DiscoverTab>("热度榜");
   const [openCustom, setOpenCustom] = useState(false);
   const [customSort, setCustomSort] = useState<SortKey | null>(null);
@@ -295,13 +308,20 @@ function DiscoverSection() {
                   </div>
                 </td>
                 <td className="px-2 py-1.5">
-                  <CoinLink symbol={r.symbol} className="flex items-center gap-1.5">
-                    <CoinAvatar symbol={r.symbol} tone={r.avatar} small />
-                    <span className="leading-tight">
-                      <b className="block text-[12px]">{r.symbol}</b>
-                      <span className="block text-[9.5px] text-muted-foreground">{r.name}</span>
-                    </span>
-                  </CoinLink>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => onToggle(r.symbol)}
+                      className={`text-[14px] leading-none ${watchlist.includes(r.symbol) ? "text-warning" : "text-muted-foreground/50"}`}
+                      aria-label={watchlist.includes(r.symbol) ? "取消自选" : "加入自选"}
+                    >{watchlist.includes(r.symbol) ? "★" : "☆"}</button>
+                    <CoinLink symbol={r.symbol} className="flex items-center gap-1.5">
+                      <CoinAvatar symbol={r.symbol} tone={r.avatar} small />
+                      <span className="leading-tight">
+                        <b className="block text-[12px]">{r.symbol}</b>
+                        <span className="block text-[9.5px] text-muted-foreground">{r.name}</span>
+                      </span>
+                    </CoinLink>
+                  </div>
                 </td>
                 <td className="px-2 py-1.5 font-mono font-black text-primary">{r.heat.toFixed(1)}</td>
                 <td className="px-2 py-1.5">
@@ -491,7 +511,8 @@ function CustomSortDialog({
 }
 
 /* ============== 自选 ============== */
-function WatchlistSection() {
+function WatchlistSection({ watchlist, onToggle }: { watchlist: string[]; onToggle: (sym: string) => void }) {
+  const list = coins.filter((c) => watchlist.includes(c.symbol));
   return (
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
       <div className="mb-2.5 flex items-center justify-between">
@@ -515,16 +536,23 @@ function WatchlistSection() {
                 </tr>
               </thead>
               <tbody>
-                {coins.map((coin) => (
+                {list.map((coin) => (
                   <tr key={coin.symbol} className="border-t border-panel-border/60">
                     <td className="sticky left-0 z-10 w-[112px] bg-panel px-2 py-1.5 shadow-[2px_0_0_0_hsl(var(--border))]">
-                      <CoinLink symbol={coin.symbol} className="flex items-center gap-1.5">
-                        <CoinAvatar symbol={coin.symbol} tone={coin.avatar} small />
-                        <span className="min-w-0 leading-tight">
-                          <b className="block truncate text-[12px]">{coin.symbol}</b>
-                          <span className="block truncate text-[9.5px] text-muted-foreground">{coin.name}</span>
-                        </span>
-                      </CoinLink>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => onToggle(coin.symbol)}
+                          className="text-[13px] leading-none text-warning"
+                          aria-label="移除自选"
+                        >★</button>
+                        <CoinLink symbol={coin.symbol} className="flex min-w-0 items-center gap-1.5">
+                          <CoinAvatar symbol={coin.symbol} tone={coin.avatar} small />
+                          <span className="min-w-0 leading-tight">
+                            <b className="block truncate text-[12px]">{coin.symbol}</b>
+                            <span className="block truncate text-[9.5px] text-muted-foreground">{coin.name}</span>
+                          </span>
+                        </CoinLink>
+                      </div>
                     </td>
                     <td className="px-2.5 py-1.5 font-mono font-black text-primary">{coin.heat}</td>
                     <td className="px-2.5 py-1.5">
@@ -539,6 +567,9 @@ function WatchlistSection() {
                     <td className="px-2.5 py-1.5 font-mono"><b>{coin.communities24}</b><span className="text-muted-foreground"> / {coin.communities7}</span></td>
                   </tr>
                 ))}
+                {list.length === 0 && (
+                  <tr><td colSpan={7} className="px-2 py-4 text-center text-[11px] text-muted-foreground">暂无自选币种，去「发现」点击 ★ 添加</td></tr>
+                )}
               </tbody>
             </table>
           </div>
