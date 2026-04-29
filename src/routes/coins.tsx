@@ -60,6 +60,7 @@ const sentimentRows = [
 ];
 
 function MindshareSection() {
+  const [expanded, setExpanded] = useState(false);
   return (
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
       <div className="mb-2 flex items-end justify-between">
