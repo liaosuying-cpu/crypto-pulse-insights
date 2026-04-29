@@ -201,7 +201,7 @@ const SORT_FIELDS = [
 type SortKey = (typeof SORT_FIELDS)[number]["key"];
 type FilterMap = Partial<Record<SortKey, { min: number; max: number }>>;
 
-function DiscoverSection() {
+function DiscoverSection({ watchlist, onToggle }: { watchlist: string[]; onToggle: (sym: string) => void }) {
   const [tab, setTab] = useState<DiscoverTab>("热度榜");
   const [openCustom, setOpenCustom] = useState(false);
   const [customSort, setCustomSort] = useState<SortKey | null>(null);
