@@ -364,7 +364,10 @@ function OverlayChart({
   extraLine?: { data: number[]; color: string; label: string };
 }) {
   const w = 320, h = 90;
-  const lines = active.map((k) => ({ data: factorData[k], color: FACTORS.find((f) => f.key === k)!.color, label: FACTORS.find((f) => f.key === k)!.label }));
+  const lines: { data: number[]; color: string; label: string }[] = active.map((k) => {
+    const f = FACTORS.find((x) => x.key === k)!;
+    return { data: factorData[k], color: f.color as string, label: f.label as string };
+  });
   if (extraLine) lines.push(extraLine);
   if (!lines.length) return <div className="grid h-[90px] place-items-center text-[10px] text-muted-foreground">请选择至少一个指标</div>;
   const allVals = lines.flatMap((l) => l.data);
