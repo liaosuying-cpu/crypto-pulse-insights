@@ -142,13 +142,15 @@ function AivixChart() {
   const maxI = Math.max(...data.map((d) => d.index));
   const minI = Math.min(...data.map((d) => d.index));
 
+  const r = (n: number) => Math.round(n * 100) / 100;
   const stepX = (W - PAD * 2) / (data.length - 1);
-  const yA = (v: number) => PAD + (1 - (v - minA) / (maxA - minA || 1)) * (H1 - PAD * 2);
-  const yI = (v: number) => PAD + (1 - (v - minI) / (maxI - minI || 1)) * (H2 - PAD * 2);
-  const barW = Math.max(3, stepX * 0.55);
+  const yA = (v: number) => r(PAD + (1 - (v - minA) / (maxA - minA || 1)) * (H1 - PAD * 2));
+  const yI = (v: number) => r(PAD + (1 - (v - minI) / (maxI - minI || 1)) * (H2 - PAD * 2));
+  const xAt = (i: number) => r(PAD + i * stepX);
+  const barW = r(Math.max(3, stepX * 0.55));
 
-  const linePath = data.map((d, i) => `${i === 0 ? "M" : "L"} ${PAD + i * stepX} ${yA(d.aivix)}`).join(" ");
-  const indexPath = data.map((d, i) => `${i === 0 ? "M" : "L"} ${PAD + i * stepX} ${yI(d.index)}`).join(" ");
+  const linePath = data.map((d, i) => `${i === 0 ? "M" : "L"} ${xAt(i)} ${yA(d.aivix)}`).join(" ");
+  const indexPath = data.map((d, i) => `${i === 0 ? "M" : "L"} ${xAt(i)} ${yI(d.index)}`).join(" ");
 
   // sync horizontal scroll
   const sync = (from: "top" | "bot") => (e: React.UIEvent<HTMLDivElement>) => {
@@ -193,25 +195,25 @@ function AivixChart() {
         <svg width={W} height={H1} viewBox={`0 0 ${W} ${H1}`} className="block" onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
           {/* grid */}
           {[0.25, 0.5, 0.75].map((g) => (
-            <line key={g} x1={PAD} x2={W - PAD} y1={PAD + (H1 - PAD * 2) * g} y2={PAD + (H1 - PAD * 2) * g} stroke="hsl(var(--panel-border))" strokeDasharray="2 4" />
+            <line key={g} x1={PAD} x2={W - PAD} y1={r(PAD + (H1 - PAD * 2) * g)} y2={r(PAD + (H1 - PAD * 2) * g)} stroke="hsl(var(--panel-border))" strokeDasharray="2 4" />
           ))}
           {/* volume bars */}
           {data.map((d, i) => {
-            const h = ((d.vol / maxV) * (H1 - PAD * 2)) * 0.65;
-            return <rect key={i} x={PAD + i * stepX - barW / 2} y={H1 - PAD - h} width={barW} height={h} rx={1.5} fill="var(--color-primary)" opacity={0.55} />;
+            const h = r(((d.vol / maxV) * (H1 - PAD * 2)) * 0.65);
+            return <rect key={i} x={r(xAt(i) - barW / 2)} y={r(H1 - PAD - h)} width={barW} height={h} rx={1.5} fill="var(--color-primary)" opacity={0.55} />;
           })}
           {/* aivix line (white = foreground) */}
           <path d={linePath} stroke="var(--color-foreground)" strokeWidth={2} fill="none" strokeLinecap="round" />
           {/* anomalies */}
           {data.map((d, i) => d.anomaly ? (
             <g key={i}>
-              <circle cx={PAD + i * stepX} cy={yA(d.aivix)} r={5} fill="none" stroke="var(--color-warning)" strokeWidth={2} />
-              <circle cx={PAD + i * stepX} cy={yA(d.aivix)} r={2.5} fill="var(--color-warning)" />
+              <circle cx={xAt(i)} cy={yA(d.aivix)} r={5} fill="none" stroke="var(--color-warning)" strokeWidth={2} />
+              <circle cx={xAt(i)} cy={yA(d.aivix)} r={2.5} fill="var(--color-warning)" />
             </g>
           ) : null)}
           {/* hover crosshair */}
           {hover != null ? (
-            <line x1={PAD + hover * stepX} x2={PAD + hover * stepX} y1={PAD} y2={H1 - PAD} stroke="var(--color-primary)" strokeDasharray="2 3" opacity={0.8} />
+            <line x1={xAt(hover)} x2={xAt(hover)} y1={PAD} y2={H1 - PAD} stroke="var(--color-primary)" strokeDasharray="2 3" opacity={0.8} />
           ) : null}
         </svg>
 
@@ -219,7 +221,7 @@ function AivixChart() {
         {hoverPt ? (
           <div
             className="pointer-events-none absolute top-1 z-10 min-w-[150px] rounded-lg border border-panel-border bg-background/95 p-2 text-[10px] shadow-glow backdrop-blur"
-            style={{ left: Math.min(W - 160, Math.max(4, PAD + (hover ?? 0) * stepX + 8)) }}
+            style={{ left: Math.min(W - 160, Math.max(4, xAt(hover ?? 0) + 8)) }}
           >
             <div className="mb-1 flex items-center justify-between gap-2">
               <span className="font-black text-foreground">{hoverPt.t}</span>
@@ -248,10 +250,10 @@ function AivixChart() {
               <stop offset="100%" stopColor="var(--color-signal)" stopOpacity="0" />
             </linearGradient>
           </defs>
-          <path d={`${indexPath} L ${PAD + (data.length - 1) * stepX} ${H2 - PAD} L ${PAD} ${H2 - PAD} Z`} fill="url(#idxFill)" />
+          <path d={`${indexPath} L ${xAt(data.length - 1)} ${H2 - PAD} L ${PAD} ${H2 - PAD} Z`} fill="url(#idxFill)" />
           <path d={indexPath} stroke="var(--color-signal)" strokeWidth={2} fill="none" strokeLinecap="round" />
           {hover != null ? (
-            <line x1={PAD + hover * stepX} x2={PAD + hover * stepX} y1={0} y2={H2} stroke="var(--color-signal)" strokeDasharray="2 3" opacity={0.7} />
+            <line x1={xAt(hover)} x2={xAt(hover)} y1={0} y2={H2} stroke="var(--color-signal)" strokeDasharray="2 3" opacity={0.7} />
           ) : null}
         </svg>
         <div className="flex justify-between px-2 pt-1 text-[10px] text-muted-foreground" style={{ width: W }}>
