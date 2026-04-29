@@ -308,13 +308,20 @@ function DiscoverSection({ watchlist, onToggle }: { watchlist: string[]; onToggl
                   </div>
                 </td>
                 <td className="px-2 py-1.5">
-                  <CoinLink symbol={r.symbol} className="flex items-center gap-1.5">
-                    <CoinAvatar symbol={r.symbol} tone={r.avatar} small />
-                    <span className="leading-tight">
-                      <b className="block text-[12px]">{r.symbol}</b>
-                      <span className="block text-[9.5px] text-muted-foreground">{r.name}</span>
-                    </span>
-                  </CoinLink>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => onToggle(r.symbol)}
+                      className={`text-[14px] leading-none ${watchlist.includes(r.symbol) ? "text-warning" : "text-muted-foreground/50"}`}
+                      aria-label={watchlist.includes(r.symbol) ? "取消自选" : "加入自选"}
+                    >{watchlist.includes(r.symbol) ? "★" : "☆"}</button>
+                    <CoinLink symbol={r.symbol} className="flex items-center gap-1.5">
+                      <CoinAvatar symbol={r.symbol} tone={r.avatar} small />
+                      <span className="leading-tight">
+                        <b className="block text-[12px]">{r.symbol}</b>
+                        <span className="block text-[9.5px] text-muted-foreground">{r.name}</span>
+                      </span>
+                    </CoinLink>
+                  </div>
                 </td>
                 <td className="px-2 py-1.5 font-mono font-black text-primary">{r.heat.toFixed(1)}</td>
                 <td className="px-2 py-1.5">
