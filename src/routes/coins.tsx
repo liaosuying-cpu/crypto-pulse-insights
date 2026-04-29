@@ -80,7 +80,7 @@ function MindshareSection() {
         ))}
       </div>
 
-      <div className="h-[150px] w-full">
+      <div className={`${expanded ? "h-[150px]" : "h-[80px]"} w-full transition-all`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={mindshareData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }} stackOffset="expand">
             <defs>
