@@ -80,7 +80,7 @@ function MindshareSection() {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={mindshareData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }} stackOffset="expand">
             <defs>
-              {MIND_SECTORS.map((s) => (
+              {MIND_COINS.map((s) => (
                 <linearGradient key={s.key} id={`g-${s.key}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={s.color} stopOpacity={0.95} />
                   <stop offset="100%" stopColor={s.color} stopOpacity={0.55} />
@@ -93,7 +93,7 @@ function MindshareSection() {
               contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 11, padding: "6px 8px" }}
               formatter={(v: number, n: string) => [`${(v * 100).toFixed(1)}%`, n.toUpperCase()]}
             />
-            {MIND_SECTORS.map((s) => (
+            {MIND_COINS.map((s) => (
               <Area key={s.key} type="monotone" dataKey={s.key} stackId="1" stroke={s.color} strokeWidth={1} fill={`url(#g-${s.key})`} />
             ))}
           </AreaChart>
