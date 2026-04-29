@@ -179,24 +179,33 @@ function sortByTab(tab: DiscoverTab, rows: DiscoverRow[]): DiscoverRow[] {
 }
 
 const SORT_FIELDS = [
-  { key: "heat", label: "热度" },
-  { key: "mentions", label: "提及" },
-  { key: "sentiment", label: "情绪" },
-  { key: "change", label: "涨跌幅" },
-  { key: "price", label: "价格" },
+  { key: "heat", label: "热度", min: 0, max: 100, step: 1, suffix: "" },
+  { key: "mentions", label: "提及", min: 0, max: 200000, step: 1000, suffix: "" },
+  { key: "sentiment", label: "情绪", min: 0, max: 100, step: 1, suffix: "" },
+  { key: "change", label: "涨跌幅", min: -20, max: 20, step: 0.5, suffix: "%" },
+  { key: "price", label: "价格", min: 0, max: 100000, step: 100, suffix: "$" },
 ] as const;
 type SortKey = (typeof SORT_FIELDS)[number]["key"];
+type FilterMap = Partial<Record<SortKey, { min: number; max: number }>>;
 
 function DiscoverSection() {
   const [tab, setTab] = useState<DiscoverTab>("热度榜");
   const [openCustom, setOpenCustom] = useState(false);
   const [customSort, setCustomSort] = useState<SortKey | null>(null);
   const [customDir, setCustomDir] = useState<"desc" | "asc">("desc");
-  const [minHeat, setMinHeat] = useState(0);
+  const [filters, setFilters] = useState<FilterMap>({});
+
+  const activeFilterCount = Object.keys(filters).length;
 
   const rows = useMemo(() => {
     let r = sortByTab(tab, discoverPool);
-    if (minHeat > 0) r = r.filter((x) => x.heat >= minHeat);
+    (Object.keys(filters) as SortKey[]).forEach((k) => {
+      const f = filters[k]!;
+      r = r.filter((x) => {
+        const v = x[k] as number;
+        return v >= f.min && v <= f.max;
+      });
+    });
     if (customSort) {
       r = [...r].sort((a, b) => {
         const va = a[customSort] as number;
@@ -205,7 +214,7 @@ function DiscoverSection() {
       });
     }
     return r;
-  }, [tab, customSort, customDir, minHeat]);
+  }, [tab, customSort, customDir, filters]);
 
   return (
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
@@ -213,9 +222,12 @@ function DiscoverSection() {
         <h2 className="text-base font-black tracking-tight">发现</h2>
         <button
           onClick={() => setOpenCustom(true)}
-          className="rounded-full border border-primary/60 bg-primary/10 px-2.5 py-1 text-[10.5px] font-bold text-primary"
+          className="flex items-center gap-1 rounded-full border border-primary/60 bg-primary/10 px-2.5 py-1 text-[10.5px] font-bold text-primary"
         >
           自定义
+          {activeFilterCount > 0 && (
+            <span className="rounded-full bg-primary px-1.5 text-[9.5px] font-black text-primary-foreground">{activeFilterCount}</span>
+          )}
         </button>
       </div>
 
@@ -234,6 +246,33 @@ function DiscoverSection() {
           ))}
         </div>
       </div>
+
+      {(activeFilterCount > 0 || customSort) && (
+        <div className="mb-2 flex flex-wrap items-center gap-1.5">
+          {customSort && (
+            <span className="rounded-full border border-primary/50 bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+              排序：{SORT_FIELDS.find((f) => f.key === customSort)?.label} {customDir === "desc" ? "↓" : "↑"}
+            </span>
+          )}
+          {(Object.keys(filters) as SortKey[]).map((k) => {
+            const f = SORT_FIELDS.find((s) => s.key === k)!;
+            const v = filters[k]!;
+            return (
+              <span key={k} className="flex items-center gap-1 rounded-full border border-panel-border bg-background/60 px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                {f.label} {f.suffix}{v.min}~{f.suffix}{v.max}
+                <button
+                  onClick={() => setFilters((p) => { const n = { ...p }; delete n[k]; return n; })}
+                  className="text-negative"
+                >✕</button>
+              </span>
+            );
+          })}
+          <button
+            onClick={() => { setFilters({}); setCustomSort(null); }}
+            className="text-[10px] font-bold text-muted-foreground underline"
+          >清除全部</button>
+        </div>
+      )}
 
       <div className="overflow-hidden rounded-xl border border-panel-border bg-background/45">
         <table className="w-full text-left text-[11.5px]">
@@ -281,7 +320,7 @@ function DiscoverSection() {
               </tr>
             ))}
             {rows.length === 0 && (
-              <tr><td colSpan={5} className="px-2 py-4 text-center text-[11px] text-muted-foreground">暂无数据</td></tr>
+              <tr><td colSpan={5} className="px-2 py-4 text-center text-[11px] text-muted-foreground">暂无符合条件的数据</td></tr>
             )}
           </tbody>
         </table>
@@ -291,8 +330,8 @@ function DiscoverSection() {
         <CustomSortDialog
           sortKey={customSort}
           dir={customDir}
-          minHeat={minHeat}
-          onChange={(k, d, h) => { setCustomSort(k); setCustomDir(d); setMinHeat(h); }}
+          filters={filters}
+          onApply={(k, d, f) => { setCustomSort(k); setCustomDir(d); setFilters(f); }}
           onClose={() => setOpenCustom(false)}
         />
       )}
@@ -330,36 +369,58 @@ function Trendline({ data, up }: { data: number[]; up: boolean }) {
 }
 
 function CustomSortDialog({
-  sortKey, dir, minHeat, onChange, onClose,
+  sortKey, dir, filters, onApply, onClose,
 }: {
   sortKey: SortKey | null;
   dir: "desc" | "asc";
-  minHeat: number;
-  onChange: (k: SortKey | null, d: "desc" | "asc", h: number) => void;
+  filters: FilterMap;
+  onApply: (k: SortKey | null, d: "desc" | "asc", f: FilterMap) => void;
   onClose: () => void;
 }) {
   const [k, setK] = useState<SortKey | null>(sortKey);
   const [d, setD] = useState<"desc" | "asc">(dir);
-  const [h, setH] = useState(minHeat);
+  const [f, setF] = useState<FilterMap>(filters);
+
+  const toggleFilter = (key: SortKey) => {
+    setF((prev) => {
+      const n = { ...prev };
+      if (n[key]) {
+        delete n[key];
+      } else {
+        const meta = SORT_FIELDS.find((s) => s.key === key)!;
+        n[key] = { min: meta.min, max: meta.max };
+      }
+      return n;
+    });
+  };
+
+  const updateRange = (key: SortKey, which: "min" | "max", v: number) => {
+    setF((prev) => {
+      const cur = prev[key];
+      if (!cur) return prev;
+      return { ...prev, [key]: { ...cur, [which]: v } };
+    });
+  };
+
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/60 px-3 pb-4" onClick={onClose}>
-      <div className="w-full max-w-[400px] rounded-2xl border border-panel-border bg-panel p-4 shadow-panel" onClick={(e) => e.stopPropagation()}>
+      <div className="max-h-[85vh] w-full max-w-[400px] overflow-y-auto rounded-2xl border border-panel-border bg-panel p-4 shadow-panel" onClick={(e) => e.stopPropagation()}>
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-black">自定义排序 / 筛选</h3>
+          <h3 className="text-sm font-black">自定义排序 / 多条件筛选</h3>
           <button onClick={onClose} className="text-muted-foreground">✕</button>
         </div>
 
-        <p className="mb-1.5 text-[10.5px] font-bold text-muted-foreground">排序指标</p>
+        <p className="mb-1.5 text-[10.5px] font-bold text-muted-foreground">排序指标（单选）</p>
         <div className="mb-3 grid grid-cols-3 gap-1.5">
-          {SORT_FIELDS.map((f) => (
+          {SORT_FIELDS.map((field) => (
             <button
-              key={f.key}
-              onClick={() => setK(k === f.key ? null : f.key)}
+              key={field.key}
+              onClick={() => setK(k === field.key ? null : field.key)}
               className={`rounded-lg px-2 py-1.5 text-[11px] font-bold ${
-                k === f.key ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/50 text-muted-foreground"
+                k === field.key ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/50 text-muted-foreground"
               }`}
             >
-              {f.label}
+              {field.label}
             </button>
           ))}
         </div>
@@ -370,12 +431,59 @@ function CustomSortDialog({
           <button onClick={() => setD("asc")} className={`rounded-lg px-2 py-1.5 text-[11px] font-bold ${d === "asc" ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/50 text-muted-foreground"}`}>升序 ↑</button>
         </div>
 
-        <p className="mb-1.5 text-[10.5px] font-bold text-muted-foreground">最低热度筛选：<span className="text-primary">{h}</span></p>
-        <input type="range" min={0} max={100} step={5} value={h} onChange={(e) => setH(Number(e.target.value))} className="mb-3 w-full accent-primary" />
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-[10.5px] font-bold text-muted-foreground">筛选条件（可多选）</p>
+          <span className="text-[9.5px] text-muted-foreground">已启用 {Object.keys(f).length}</span>
+        </div>
+        <div className="mb-3 space-y-2">
+          {SORT_FIELDS.map((field) => {
+            const enabled = !!f[field.key];
+            const cur = f[field.key];
+            return (
+              <div key={field.key} className={`rounded-lg border p-2 transition ${enabled ? "border-primary/60 bg-primary/5" : "border-panel-border bg-background/40"}`}>
+                <button
+                  onClick={() => toggleFilter(field.key)}
+                  className="flex w-full items-center justify-between text-left"
+                >
+                  <span className="text-[11px] font-bold">{field.label}</span>
+                  <span className={`flex h-4 w-4 items-center justify-center rounded border text-[9px] font-black ${enabled ? "border-primary bg-primary text-primary-foreground" : "border-panel-border text-muted-foreground"}`}>
+                    {enabled ? "✓" : ""}
+                  </span>
+                </button>
+                {enabled && cur && (
+                  <div className="mt-2 space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="w-7 text-[9.5px] font-bold text-muted-foreground">最小</span>
+                      <input
+                        type="range"
+                        min={field.min} max={field.max} step={field.step}
+                        value={cur.min}
+                        onChange={(e) => updateRange(field.key, "min", Number(e.target.value))}
+                        className="flex-1 accent-primary"
+                      />
+                      <span className="w-14 text-right font-mono text-[10px] font-bold text-primary">{field.suffix}{cur.min}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-7 text-[9.5px] font-bold text-muted-foreground">最大</span>
+                      <input
+                        type="range"
+                        min={field.min} max={field.max} step={field.step}
+                        value={cur.max}
+                        onChange={(e) => updateRange(field.key, "max", Number(e.target.value))}
+                        className="flex-1 accent-primary"
+                      />
+                      <span className="w-14 text-right font-mono text-[10px] font-bold text-primary">{field.suffix}{cur.max}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
         <div className="flex gap-2">
-          <button onClick={() => { setK(null); setD("desc"); setH(0); }} className="flex-1 rounded-lg border border-panel-border py-2 text-[12px] font-bold text-muted-foreground">重置</button>
-          <button onClick={() => { onChange(k, d, h); onClose(); }} className="flex-1 rounded-lg bg-primary py-2 text-[12px] font-black text-primary-foreground">应用</button>
+          <button onClick={() => { setK(null); setD("desc"); setF({}); }} className="flex-1 rounded-lg border border-panel-border py-2 text-[12px] font-bold text-muted-foreground">重置</button>
+          <button onClick={() => { onApply(k, d, f); onClose(); }} className="flex-1 rounded-lg bg-primary py-2 text-[12px] font-black text-primary-foreground">应用筛选</button>
         </div>
       </div>
     </div>
