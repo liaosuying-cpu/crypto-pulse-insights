@@ -221,7 +221,7 @@ function AivixChart() {
         {hoverPt ? (
           <div
             className="pointer-events-none absolute top-1 z-10 min-w-[150px] rounded-lg border border-panel-border bg-background/95 p-2 text-[10px] shadow-glow backdrop-blur"
-            style={{ left: Math.min(W - 160, Math.max(4, PAD + (hover ?? 0) * stepX + 8)) }}
+            style={{ left: Math.min(W - 160, Math.max(4, xAt(hover ?? 0) + 8)) }}
           >
             <div className="mb-1 flex items-center justify-between gap-2">
               <span className="font-black text-foreground">{hoverPt.t}</span>
