@@ -179,24 +179,33 @@ function sortByTab(tab: DiscoverTab, rows: DiscoverRow[]): DiscoverRow[] {
 }
 
 const SORT_FIELDS = [
-  { key: "heat", label: "热度" },
-  { key: "mentions", label: "提及" },
-  { key: "sentiment", label: "情绪" },
-  { key: "change", label: "涨跌幅" },
-  { key: "price", label: "价格" },
+  { key: "heat", label: "热度", min: 0, max: 100, step: 1, suffix: "" },
+  { key: "mentions", label: "提及", min: 0, max: 200000, step: 1000, suffix: "" },
+  { key: "sentiment", label: "情绪", min: 0, max: 100, step: 1, suffix: "" },
+  { key: "change", label: "涨跌幅", min: -20, max: 20, step: 0.5, suffix: "%" },
+  { key: "price", label: "价格", min: 0, max: 100000, step: 100, suffix: "$" },
 ] as const;
 type SortKey = (typeof SORT_FIELDS)[number]["key"];
+type FilterMap = Partial<Record<SortKey, { min: number; max: number }>>;
 
 function DiscoverSection() {
   const [tab, setTab] = useState<DiscoverTab>("热度榜");
   const [openCustom, setOpenCustom] = useState(false);
   const [customSort, setCustomSort] = useState<SortKey | null>(null);
   const [customDir, setCustomDir] = useState<"desc" | "asc">("desc");
-  const [minHeat, setMinHeat] = useState(0);
+  const [filters, setFilters] = useState<FilterMap>({});
+
+  const activeFilterCount = Object.keys(filters).length;
 
   const rows = useMemo(() => {
     let r = sortByTab(tab, discoverPool);
-    if (minHeat > 0) r = r.filter((x) => x.heat >= minHeat);
+    (Object.keys(filters) as SortKey[]).forEach((k) => {
+      const f = filters[k]!;
+      r = r.filter((x) => {
+        const v = x[k] as number;
+        return v >= f.min && v <= f.max;
+      });
+    });
     if (customSort) {
       r = [...r].sort((a, b) => {
         const va = a[customSort] as number;
@@ -205,7 +214,7 @@ function DiscoverSection() {
       });
     }
     return r;
-  }, [tab, customSort, customDir, minHeat]);
+  }, [tab, customSort, customDir, filters]);
 
   return (
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
@@ -213,9 +222,12 @@ function DiscoverSection() {
         <h2 className="text-base font-black tracking-tight">发现</h2>
         <button
           onClick={() => setOpenCustom(true)}
-          className="rounded-full border border-primary/60 bg-primary/10 px-2.5 py-1 text-[10.5px] font-bold text-primary"
+          className="flex items-center gap-1 rounded-full border border-primary/60 bg-primary/10 px-2.5 py-1 text-[10.5px] font-bold text-primary"
         >
           自定义
+          {activeFilterCount > 0 && (
+            <span className="rounded-full bg-primary px-1.5 text-[9.5px] font-black text-primary-foreground">{activeFilterCount}</span>
+          )}
         </button>
       </div>
 
@@ -234,6 +246,33 @@ function DiscoverSection() {
           ))}
         </div>
       </div>
+
+      {(activeFilterCount > 0 || customSort) && (
+        <div className="mb-2 flex flex-wrap items-center gap-1.5">
+          {customSort && (
+            <span className="rounded-full border border-primary/50 bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+              排序：{SORT_FIELDS.find((f) => f.key === customSort)?.label} {customDir === "desc" ? "↓" : "↑"}
+            </span>
+          )}
+          {(Object.keys(filters) as SortKey[]).map((k) => {
+            const f = SORT_FIELDS.find((s) => s.key === k)!;
+            const v = filters[k]!;
+            return (
+              <span key={k} className="flex items-center gap-1 rounded-full border border-panel-border bg-background/60 px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                {f.label} {f.suffix}{v.min}~{f.suffix}{v.max}
+                <button
+                  onClick={() => setFilters((p) => { const n = { ...p }; delete n[k]; return n; })}
+                  className="text-negative"
+                >✕</button>
+              </span>
+            );
+          })}
+          <button
+            onClick={() => { setFilters({}); setCustomSort(null); }}
+            className="text-[10px] font-bold text-muted-foreground underline"
+          >清除全部</button>
+        </div>
+      )}
 
       <div className="overflow-hidden rounded-xl border border-panel-border bg-background/45">
         <table className="w-full text-left text-[11.5px]">
@@ -281,7 +320,7 @@ function DiscoverSection() {
               </tr>
             ))}
             {rows.length === 0 && (
-              <tr><td colSpan={5} className="px-2 py-4 text-center text-[11px] text-muted-foreground">暂无数据</td></tr>
+              <tr><td colSpan={5} className="px-2 py-4 text-center text-[11px] text-muted-foreground">暂无符合条件的数据</td></tr>
             )}
           </tbody>
         </table>
@@ -291,8 +330,8 @@ function DiscoverSection() {
         <CustomSortDialog
           sortKey={customSort}
           dir={customDir}
-          minHeat={minHeat}
-          onChange={(k, d, h) => { setCustomSort(k); setCustomDir(d); setMinHeat(h); }}
+          filters={filters}
+          onApply={(k, d, f) => { setCustomSort(k); setCustomDir(d); setFilters(f); }}
           onClose={() => setOpenCustom(false)}
         />
       )}
