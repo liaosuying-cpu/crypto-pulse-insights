@@ -504,7 +504,8 @@ function CustomSortDialog({
 }
 
 /* ============== 自选 ============== */
-function WatchlistSection() {
+function WatchlistSection({ watchlist, onToggle }: { watchlist: string[]; onToggle: (sym: string) => void }) {
+  const list = coins.filter((c) => watchlist.includes(c.symbol));
   return (
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
       <div className="mb-2.5 flex items-center justify-between">
