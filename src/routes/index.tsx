@@ -142,13 +142,15 @@ function AivixChart() {
   const maxI = Math.max(...data.map((d) => d.index));
   const minI = Math.min(...data.map((d) => d.index));
 
+  const r = (n: number) => Math.round(n * 100) / 100;
   const stepX = (W - PAD * 2) / (data.length - 1);
-  const yA = (v: number) => PAD + (1 - (v - minA) / (maxA - minA || 1)) * (H1 - PAD * 2);
-  const yI = (v: number) => PAD + (1 - (v - minI) / (maxI - minI || 1)) * (H2 - PAD * 2);
-  const barW = Math.max(3, stepX * 0.55);
+  const yA = (v: number) => r(PAD + (1 - (v - minA) / (maxA - minA || 1)) * (H1 - PAD * 2));
+  const yI = (v: number) => r(PAD + (1 - (v - minI) / (maxI - minI || 1)) * (H2 - PAD * 2));
+  const xAt = (i: number) => r(PAD + i * stepX);
+  const barW = r(Math.max(3, stepX * 0.55));
 
-  const linePath = data.map((d, i) => `${i === 0 ? "M" : "L"} ${PAD + i * stepX} ${yA(d.aivix)}`).join(" ");
-  const indexPath = data.map((d, i) => `${i === 0 ? "M" : "L"} ${PAD + i * stepX} ${yI(d.index)}`).join(" ");
+  const linePath = data.map((d, i) => `${i === 0 ? "M" : "L"} ${xAt(i)} ${yA(d.aivix)}`).join(" ");
+  const indexPath = data.map((d, i) => `${i === 0 ? "M" : "L"} ${xAt(i)} ${yI(d.index)}`).join(" ");
 
   // sync horizontal scroll
   const sync = (from: "top" | "bot") => (e: React.UIEvent<HTMLDivElement>) => {
