@@ -195,25 +195,25 @@ function AivixChart() {
         <svg width={W} height={H1} viewBox={`0 0 ${W} ${H1}`} className="block" onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
           {/* grid */}
           {[0.25, 0.5, 0.75].map((g) => (
-            <line key={g} x1={PAD} x2={W - PAD} y1={PAD + (H1 - PAD * 2) * g} y2={PAD + (H1 - PAD * 2) * g} stroke="hsl(var(--panel-border))" strokeDasharray="2 4" />
+            <line key={g} x1={PAD} x2={W - PAD} y1={r(PAD + (H1 - PAD * 2) * g)} y2={r(PAD + (H1 - PAD * 2) * g)} stroke="hsl(var(--panel-border))" strokeDasharray="2 4" />
           ))}
           {/* volume bars */}
           {data.map((d, i) => {
-            const h = ((d.vol / maxV) * (H1 - PAD * 2)) * 0.65;
-            return <rect key={i} x={PAD + i * stepX - barW / 2} y={H1 - PAD - h} width={barW} height={h} rx={1.5} fill="var(--color-primary)" opacity={0.55} />;
+            const h = r(((d.vol / maxV) * (H1 - PAD * 2)) * 0.65);
+            return <rect key={i} x={r(xAt(i) - barW / 2)} y={r(H1 - PAD - h)} width={barW} height={h} rx={1.5} fill="var(--color-primary)" opacity={0.55} />;
           })}
           {/* aivix line (white = foreground) */}
           <path d={linePath} stroke="var(--color-foreground)" strokeWidth={2} fill="none" strokeLinecap="round" />
           {/* anomalies */}
           {data.map((d, i) => d.anomaly ? (
             <g key={i}>
-              <circle cx={PAD + i * stepX} cy={yA(d.aivix)} r={5} fill="none" stroke="var(--color-warning)" strokeWidth={2} />
-              <circle cx={PAD + i * stepX} cy={yA(d.aivix)} r={2.5} fill="var(--color-warning)" />
+              <circle cx={xAt(i)} cy={yA(d.aivix)} r={5} fill="none" stroke="var(--color-warning)" strokeWidth={2} />
+              <circle cx={xAt(i)} cy={yA(d.aivix)} r={2.5} fill="var(--color-warning)" />
             </g>
           ) : null)}
           {/* hover crosshair */}
           {hover != null ? (
-            <line x1={PAD + hover * stepX} x2={PAD + hover * stepX} y1={PAD} y2={H1 - PAD} stroke="var(--color-primary)" strokeDasharray="2 3" opacity={0.8} />
+            <line x1={xAt(hover)} x2={xAt(hover)} y1={PAD} y2={H1 - PAD} stroke="var(--color-primary)" strokeDasharray="2 3" opacity={0.8} />
           ) : null}
         </svg>
 
