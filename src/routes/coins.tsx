@@ -529,16 +529,23 @@ function WatchlistSection({ watchlist, onToggle }: { watchlist: string[]; onTogg
                 </tr>
               </thead>
               <tbody>
-                {coins.map((coin) => (
+                {list.map((coin) => (
                   <tr key={coin.symbol} className="border-t border-panel-border/60">
                     <td className="sticky left-0 z-10 w-[112px] bg-panel px-2 py-1.5 shadow-[2px_0_0_0_hsl(var(--border))]">
-                      <CoinLink symbol={coin.symbol} className="flex items-center gap-1.5">
-                        <CoinAvatar symbol={coin.symbol} tone={coin.avatar} small />
-                        <span className="min-w-0 leading-tight">
-                          <b className="block truncate text-[12px]">{coin.symbol}</b>
-                          <span className="block truncate text-[9.5px] text-muted-foreground">{coin.name}</span>
-                        </span>
-                      </CoinLink>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => onToggle(coin.symbol)}
+                          className="text-[13px] leading-none text-warning"
+                          aria-label="移除自选"
+                        >★</button>
+                        <CoinLink symbol={coin.symbol} className="flex min-w-0 items-center gap-1.5">
+                          <CoinAvatar symbol={coin.symbol} tone={coin.avatar} small />
+                          <span className="min-w-0 leading-tight">
+                            <b className="block truncate text-[12px]">{coin.symbol}</b>
+                            <span className="block truncate text-[9.5px] text-muted-foreground">{coin.name}</span>
+                          </span>
+                        </CoinLink>
+                      </div>
                     </td>
                     <td className="px-2.5 py-1.5 font-mono font-black text-primary">{coin.heat}</td>
                     <td className="px-2.5 py-1.5">
@@ -553,6 +560,9 @@ function WatchlistSection({ watchlist, onToggle }: { watchlist: string[]; onTogg
                     <td className="px-2.5 py-1.5 font-mono"><b>{coin.communities24}</b><span className="text-muted-foreground"> / {coin.communities7}</span></td>
                   </tr>
                 ))}
+                {list.length === 0 && (
+                  <tr><td colSpan={7} className="px-2 py-4 text-center text-[11px] text-muted-foreground">暂无自选币种，去「发现」点击 ★ 添加</td></tr>
+                )}
               </tbody>
             </table>
           </div>
