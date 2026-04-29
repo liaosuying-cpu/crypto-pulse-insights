@@ -1,14 +1,15 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageShell, DataTable, StickyTh, StickyTd, CoinLink, CoinAvatar, DualSparkline, FooterBrand, coins, latest, type Coin } from "@/components/shell";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { PageShell, CoinLink, CoinAvatar, DualSparkline, FooterBrand, coins, type Coin } from "@/components/shell";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/coins")({
   head: () => ({
     meta: [
-      { title: "币种 · CryptOracle 加密市场数据库" },
-      { name: "description", content: "热门币种、最新上线与自选币种总览，含情绪、KOL、社区指标。" },
-      { property: "og:title", content: "币种 · CryptOracle" },
-      { property: "og:description", content: "自选币种与最新上线代币的多维数据面板。" },
+      { title: "自选 · CryptOracle 加密市场数据库" },
+      { name: "description", content: "讨论占有率、币种发现与自选币种总览，含情绪、KOL、社区指标。" },
+      { property: "og:title", content: "自选 · CryptOracle" },
+      { property: "og:description", content: "板块讨论占有率、币种发现与自选币种多维数据面板。" },
     ],
   }),
   component: CoinsPage,
@@ -17,15 +18,16 @@ export const Route = createFileRoute("/coins")({
 function CoinsPage() {
   return (
     <PageShell>
-      <h1 className="sr-only">币种</h1>
+      <h1 className="sr-only">自选</h1>
       <MindshareSection />
-      <CoinOverview />
-      <WatchlistTable />
+      <DiscoverSection />
+      <WatchlistSection />
       <FooterBrand />
     </PageShell>
   );
 }
 
+/* ============== 讨论占有率 ============== */
 const MIND_SECTORS = [
   { key: "ai", label: "AI", color: "oklch(0.72 0.18 280)" },
   { key: "meme", label: "Meme", color: "oklch(0.78 0.19 25)" },
@@ -57,8 +59,8 @@ function MindshareSection() {
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
       <div className="mb-2 flex items-end justify-between">
         <div>
-          <h2 className="text-base font-black tracking-tight">处理币种 · Mindshare</h2>
-          <p className="mt-0.5 text-[10.5px] leading-tight text-muted-foreground">心智占有率：AI 板块正在挤压 Meme · 24h</p>
+          <h2 className="text-base font-black tracking-tight">讨论占有率</h2>
+          <p className="mt-0.5 text-[10.5px] leading-tight text-muted-foreground">全网加密讨论 · 板块占比 · 24h（AI 正在挤压 Meme）</p>
         </div>
         <span className="rounded-full border border-positive/50 bg-positive/10 px-2 py-0.5 text-[10px] font-bold text-positive">AI ↑ 11.4%</span>
       </div>
@@ -103,7 +105,7 @@ function MindshareSection() {
               <th className="px-2.5 py-1.5 font-bold">板块</th>
               <th className="px-2 py-1.5 font-bold">占比</th>
               <th className="px-2 py-1.5 font-bold">24h Δ</th>
-              <th className="px-2.5 py-1.5 font-bold">Bull / Bear</th>
+              <th className="px-2.5 py-1.5 font-bold">好/坏名声</th>
             </tr>
           </thead>
           <tbody>
@@ -133,49 +135,305 @@ function MindshareSection() {
   );
 }
 
-function CoinOverview() {
+/* ============== 发现 ============== */
+const DISCOVER_TABS = ["热度榜", "提及榜", "情绪榜", "涨幅榜", "跌幅榜", "新上线"] as const;
+type DiscoverTab = (typeof DISCOVER_TABS)[number];
+
+type DiscoverRow = {
+  symbol: string;
+  name: string;
+  avatar: Coin["avatar"];
+  heat: number;
+  mentions: number;
+  sentiment: number; // 0-100
+  price: number;
+  change: number; // %
+  rankShift: number; // +up / -down
+  isNew?: boolean;
+  trend: number[];
+};
+
+const discoverPool: DiscoverRow[] = [
+  { symbol: "BTC", name: "Bitcoin", avatar: "warning", heat: 98.7, mentions: 184000, sentiment: 78, price: 77970, change: 2.34, rankShift: 0, trend: [1, 2, 1.5, 2.4, 2.8, 3.2, 3.6] },
+  { symbol: "ETH", name: "Ethereum", avatar: "signal", heat: 94.2, mentions: 142000, sentiment: 64, price: 3521, change: -1.28, rankShift: -1, trend: [3, 2.7, 2.9, 2.4, 2.1, 2.0, 1.8] },
+  { symbol: "SOL", name: "Solana", avatar: "primary", heat: 89.5, mentions: 121000, sentiment: 81, price: 178.5, change: 5.67, rankShift: 2, trend: [1, 1.4, 1.8, 2.2, 2.6, 3.1, 3.8] },
+  { symbol: "BNB", name: "BNB", avatar: "secondary", heat: 82.1, mentions: 78000, sentiment: 52, price: 612, change: -5.67, rankShift: -2, trend: [3, 2.9, 2.6, 2.3, 2.0, 1.7, 1.4] },
+  { symbol: "XRP", name: "Ripple", avatar: "positive", heat: 76.8, mentions: 65000, sentiment: 71, price: 0.62, change: 12.11, rankShift: 4, trend: [1, 1.6, 2.0, 2.5, 3.1, 3.6, 4.2] },
+  { symbol: "WIF", name: "dogwifhat", avatar: "negative", heat: 71.2, mentions: 58000, sentiment: 69, price: 2.85, change: 12.45, rankShift: 6, isNew: true, trend: [0.5, 1.2, 1.8, 2.4, 3.0, 3.6, 4.0] },
+  { symbol: "JUP", name: "Jupiter", avatar: "positive", heat: 64.0, mentions: 42000, sentiment: 47, price: 1.23, change: -3.21, rankShift: -3, isNew: true, trend: [2.5, 2.3, 2.0, 1.8, 1.5, 1.4, 1.2] },
+  { symbol: "STRK", name: "Starknet", avatar: "primary", heat: 61.5, mentions: 38000, sentiment: 58, price: 1.87, change: 8.92, rankShift: 1, isNew: true, trend: [1, 1.4, 1.5, 2.0, 2.4, 2.7, 3.1] },
+];
+
+function sortByTab(tab: DiscoverTab, rows: DiscoverRow[]): DiscoverRow[] {
+  const r = [...rows];
+  switch (tab) {
+    case "热度榜": return r.sort((a, b) => b.heat - a.heat);
+    case "提及榜": return r.sort((a, b) => b.mentions - a.mentions);
+    case "情绪榜": return r.sort((a, b) => b.sentiment - a.sentiment);
+    case "涨幅榜": return r.sort((a, b) => b.change - a.change);
+    case "跌幅榜": return r.sort((a, b) => a.change - b.change);
+    case "新上线": return r.filter((x) => x.isNew).sort((a, b) => b.heat - a.heat);
+  }
+}
+
+const SORT_FIELDS = [
+  { key: "heat", label: "热度" },
+  { key: "mentions", label: "提及" },
+  { key: "sentiment", label: "情绪" },
+  { key: "change", label: "涨跌幅" },
+  { key: "price", label: "价格" },
+] as const;
+type SortKey = (typeof SORT_FIELDS)[number]["key"];
+
+function DiscoverSection() {
+  const [tab, setTab] = useState<DiscoverTab>("热度榜");
+  const [openCustom, setOpenCustom] = useState(false);
+  const [customSort, setCustomSort] = useState<SortKey | null>(null);
+  const [customDir, setCustomDir] = useState<"desc" | "asc">("desc");
+  const [minHeat, setMinHeat] = useState(0);
+
+  const rows = useMemo(() => {
+    let r = sortByTab(tab, discoverPool);
+    if (minHeat > 0) r = r.filter((x) => x.heat >= minHeat);
+    if (customSort) {
+      r = [...r].sort((a, b) => {
+        const va = a[customSort] as number;
+        const vb = b[customSort] as number;
+        return customDir === "desc" ? vb - va : va - vb;
+      });
+    }
+    return r;
+  }, [tab, customSort, customDir, minHeat]);
+
   return (
     <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-base font-black tracking-tight">币种</h2>
-        <Link to="/" className="rounded-full border border-primary/60 px-3 py-1 text-[11px] font-bold text-primary">显示更多</Link>
+      <div className="mb-2.5 flex items-center justify-between">
+        <h2 className="text-base font-black tracking-tight">发现</h2>
+        <button
+          onClick={() => setOpenCustom(true)}
+          className="rounded-full border border-primary/60 bg-primary/10 px-2.5 py-1 text-[10.5px] font-bold text-primary"
+        >
+          自定义
+        </button>
       </div>
-      <div className="grid grid-cols-2 gap-2.5">
-        <MiniCoinTable title="热门币种" data={coins.slice(0, 3)} />
-        <MiniCoinTable title="最新上线" data={latest} />
+
+      <div className="mb-2 -mx-3.5 overflow-x-auto px-3.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-1.5">
+          {DISCOVER_TABS.map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-bold transition ${
+                t === tab ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/50 text-muted-foreground"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
       </div>
+
+      <div className="overflow-hidden rounded-xl border border-panel-border bg-background/45">
+        <table className="w-full text-left text-[11.5px]">
+          <thead className="text-[9.5px] uppercase tracking-wide text-muted-foreground">
+            <tr>
+              <th className="px-2 py-1.5 font-bold">排名</th>
+              <th className="px-2 py-1.5 font-bold">币种</th>
+              <th className="px-2 py-1.5 font-bold">热度</th>
+              <th className="px-2 py-1.5 font-bold">价格</th>
+              <th className="px-2 py-1.5 text-right font-bold">趋势</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => (
+              <tr key={r.symbol} className="border-t border-panel-border/60">
+                <td className="px-2 py-1.5">
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-[11px] font-black">{i + 1}</span>
+                    <RankShift n={r.rankShift} />
+                  </div>
+                </td>
+                <td className="px-2 py-1.5">
+                  <CoinLink symbol={r.symbol} className="flex items-center gap-1.5">
+                    <CoinAvatar symbol={r.symbol} tone={r.avatar} small />
+                    <span className="leading-tight">
+                      <b className="block text-[12px]">{r.symbol}</b>
+                      <span className="block text-[9.5px] text-muted-foreground">{r.name}</span>
+                    </span>
+                  </CoinLink>
+                </td>
+                <td className="px-2 py-1.5 font-mono font-black text-primary">{r.heat.toFixed(1)}</td>
+                <td className="px-2 py-1.5">
+                  <div className="leading-tight">
+                    <b className="block font-mono">${formatPrice(r.price)}</b>
+                    <span className={`block font-mono text-[10px] font-bold ${r.change >= 0 ? "text-positive" : "text-negative"}`}>
+                      {r.change >= 0 ? "+" : ""}{r.change.toFixed(2)}%
+                    </span>
+                  </div>
+                </td>
+                <td className="px-2 py-1.5">
+                  <div className="ml-auto w-16">
+                    <Trendline data={r.trend} up={r.change >= 0} />
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {rows.length === 0 && (
+              <tr><td colSpan={5} className="px-2 py-4 text-center text-[11px] text-muted-foreground">暂无数据</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {openCustom && (
+        <CustomSortDialog
+          sortKey={customSort}
+          dir={customDir}
+          minHeat={minHeat}
+          onChange={(k, d, h) => { setCustomSort(k); setCustomDir(d); setMinHeat(h); }}
+          onClose={() => setOpenCustom(false)}
+        />
+      )}
     </section>
   );
 }
 
-function MiniCoinTable({ title, data }: { title: string; data: Array<{ rank: number; symbol: string; name?: string; price: string; change: string; tone: "up" | "down"; avatar: Coin["avatar"] }> }) {
+function formatPrice(p: number) {
+  if (p >= 1000) return p.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  if (p >= 1) return p.toFixed(2);
+  return p.toFixed(4);
+}
+
+function RankShift({ n }: { n: number }) {
+  if (n === 0) return <span className="text-[9px] text-muted-foreground">—</span>;
+  const up = n > 0;
   return (
-    <div className="rounded-xl border border-panel-border bg-background/45 p-2.5">
-      <h3 className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted-foreground">{title}</h3>
-      <div className="space-y-2">
-        {data.map((coin) => (
-          <CoinLink key={coin.symbol} symbol={coin.symbol} className="grid grid-cols-[0.75rem_1.5rem_1fr] items-center gap-1.5">
-            <span className="text-[10px] text-muted-foreground">{coin.rank}</span>
-            <CoinAvatar symbol={coin.symbol} tone={coin.avatar} small />
-            <span className="min-w-0 text-right leading-tight">
-              <b className="block truncate text-[12px]">{coin.symbol}</b>
-              <span className="block text-[11px] font-bold text-foreground">{coin.price}</span>
-              <span className={coin.tone === "up" ? "block text-[10px] font-bold text-positive" : "block text-[10px] font-bold text-negative"}>{coin.change}</span>
-            </span>
-          </CoinLink>
-        ))}
+    <span className={`flex items-center text-[9px] font-bold ${up ? "text-positive" : "text-negative"}`}>
+      {up ? "▲" : "▼"}{Math.abs(n)}
+    </span>
+  );
+}
+
+function Trendline({ data, up }: { data: number[]; up: boolean }) {
+  const w = 64, h = 22;
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(" ");
+  const color = up ? "oklch(0.74 0.18 150)" : "oklch(0.68 0.22 25)";
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="h-5 w-full">
+      <polyline fill="none" stroke={color} strokeWidth="1.5" points={pts} />
+    </svg>
+  );
+}
+
+function CustomSortDialog({
+  sortKey, dir, minHeat, onChange, onClose,
+}: {
+  sortKey: SortKey | null;
+  dir: "desc" | "asc";
+  minHeat: number;
+  onChange: (k: SortKey | null, d: "desc" | "asc", h: number) => void;
+  onClose: () => void;
+}) {
+  const [k, setK] = useState<SortKey | null>(sortKey);
+  const [d, setD] = useState<"desc" | "asc">(dir);
+  const [h, setH] = useState(minHeat);
+  return (
+    <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/60 px-3 pb-4" onClick={onClose}>
+      <div className="w-full max-w-[400px] rounded-2xl border border-panel-border bg-panel p-4 shadow-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-sm font-black">自定义排序 / 筛选</h3>
+          <button onClick={onClose} className="text-muted-foreground">✕</button>
+        </div>
+
+        <p className="mb-1.5 text-[10.5px] font-bold text-muted-foreground">排序指标</p>
+        <div className="mb-3 grid grid-cols-3 gap-1.5">
+          {SORT_FIELDS.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setK(k === f.key ? null : f.key)}
+              className={`rounded-lg px-2 py-1.5 text-[11px] font-bold ${
+                k === f.key ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/50 text-muted-foreground"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        <p className="mb-1.5 text-[10.5px] font-bold text-muted-foreground">方向</p>
+        <div className="mb-3 grid grid-cols-2 gap-1.5">
+          <button onClick={() => setD("desc")} className={`rounded-lg px-2 py-1.5 text-[11px] font-bold ${d === "desc" ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/50 text-muted-foreground"}`}>降序 ↓</button>
+          <button onClick={() => setD("asc")} className={`rounded-lg px-2 py-1.5 text-[11px] font-bold ${d === "asc" ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/50 text-muted-foreground"}`}>升序 ↑</button>
+        </div>
+
+        <p className="mb-1.5 text-[10.5px] font-bold text-muted-foreground">最低热度筛选：<span className="text-primary">{h}</span></p>
+        <input type="range" min={0} max={100} step={5} value={h} onChange={(e) => setH(Number(e.target.value))} className="mb-3 w-full accent-primary" />
+
+        <div className="flex gap-2">
+          <button onClick={() => { setK(null); setD("desc"); setH(0); }} className="flex-1 rounded-lg border border-panel-border py-2 text-[12px] font-bold text-muted-foreground">重置</button>
+          <button onClick={() => { onChange(k, d, h); onClose(); }} className="flex-1 rounded-lg bg-primary py-2 text-[12px] font-black text-primary-foreground">应用</button>
+        </div>
       </div>
     </div>
   );
 }
 
-function WatchlistTable() {
+/* ============== 自选 ============== */
+function WatchlistSection() {
   return (
-    <DataTable title="自选币种">
-      <table className="w-[840px] border-separate border-spacing-0 text-left text-[12px]">
-        <thead className="text-[10px] uppercase tracking-wide text-muted-foreground"><tr><StickyTh className="w-36">币种</StickyTh><th className="px-2.5 py-2">热度</th><th className="px-2.5 py-2">price</th><th className="px-2.5 py-2">market & sentiment</th><th className="px-2.5 py-2">KOLS 24h/7d</th><th className="px-2.5 py-2">popular 24h/7d</th><th className="px-2.5 py-2">communites 24h/7d</th></tr></thead>
-        <tbody>{coins.map((coin) => <tr key={coin.symbol}><StickyTd><CoinLink symbol={coin.symbol} className="flex items-center gap-2 py-2"><CoinAvatar symbol={coin.symbol} tone={coin.avatar} /><span className="leading-tight"><b className="block">{coin.symbol}</b><span className="text-[10px] text-muted-foreground">{coin.name}</span></span></CoinLink></StickyTd><td className="px-2.5 py-1.5 font-black text-primary">{coin.heat}</td><td className="px-2.5 py-1.5 font-bold">{coin.price}</td><td className="px-2.5 py-1.5"><DualSparkline /></td><td className="px-2.5 py-1.5"><b>{coin.kol24}</b><span className="text-muted-foreground"> / {coin.kol7}</span></td><td className="px-2.5 py-1.5"><b>{coin.popular24}</b><span className="text-muted-foreground"> / {coin.popular7}</span></td><td className="px-2.5 py-1.5"><b>{coin.communities24}</b><span className="text-muted-foreground"> / {coin.communities7}</span></td></tr>)}</tbody>
-      </table>
-    </DataTable>
+    <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
+      <div className="mb-2.5 flex items-center justify-between">
+        <h2 className="text-base font-black tracking-tight">自选</h2>
+        <span className="text-[10px] font-bold text-muted-foreground">← 左右滑动查看更多 →</span>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-panel-border bg-background/45">
+        <div className="relative">
+          <div className="overflow-x-auto">
+            <table className="border-separate border-spacing-0 text-left text-[11.5px]" style={{ minWidth: 720 }}>
+              <thead className="text-[9.5px] uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  <th className="sticky left-0 z-10 w-[112px] bg-panel px-2 py-2 font-bold shadow-[2px_0_0_0_hsl(var(--border))]">币种</th>
+                  <th className="px-2.5 py-2 font-bold">热度</th>
+                  <th className="px-2.5 py-2 font-bold">价格</th>
+                  <th className="px-2.5 py-2 font-bold">market & sentiment</th>
+                  <th className="px-2.5 py-2 font-bold">KOLS 24h/7d</th>
+                  <th className="px-2.5 py-2 font-bold">popular 24h/7d</th>
+                  <th className="px-2.5 py-2 font-bold">communities 24h/7d</th>
+                </tr>
+              </thead>
+              <tbody>
+                {coins.map((coin) => (
+                  <tr key={coin.symbol} className="border-t border-panel-border/60">
+                    <td className="sticky left-0 z-10 w-[112px] bg-panel px-2 py-1.5 shadow-[2px_0_0_0_hsl(var(--border))]">
+                      <CoinLink symbol={coin.symbol} className="flex items-center gap-1.5">
+                        <CoinAvatar symbol={coin.symbol} tone={coin.avatar} small />
+                        <span className="min-w-0 leading-tight">
+                          <b className="block truncate text-[12px]">{coin.symbol}</b>
+                          <span className="block truncate text-[9.5px] text-muted-foreground">{coin.name}</span>
+                        </span>
+                      </CoinLink>
+                    </td>
+                    <td className="px-2.5 py-1.5 font-mono font-black text-primary">{coin.heat}</td>
+                    <td className="px-2.5 py-1.5">
+                      <div className="leading-tight">
+                        <b className="block font-mono">{coin.price}</b>
+                        <span className={`block font-mono text-[10px] font-bold ${coin.tone === "up" ? "text-positive" : "text-negative"}`}>{coin.change}</span>
+                      </div>
+                    </td>
+                    <td className="px-2.5 py-1.5"><DualSparkline /></td>
+                    <td className="px-2.5 py-1.5 font-mono"><b>{coin.kol24}</b><span className="text-muted-foreground"> / {coin.kol7}</span></td>
+                    <td className="px-2.5 py-1.5 font-mono"><b>{coin.popular24}</b><span className="text-muted-foreground"> / {coin.popular7}</span></td>
+                    <td className="px-2.5 py-1.5 font-mono"><b>{coin.communities24}</b><span className="text-muted-foreground"> / {coin.communities7}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
