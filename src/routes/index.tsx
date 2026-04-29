@@ -250,10 +250,10 @@ function AivixChart() {
               <stop offset="100%" stopColor="var(--color-signal)" stopOpacity="0" />
             </linearGradient>
           </defs>
-          <path d={`${indexPath} L ${PAD + (data.length - 1) * stepX} ${H2 - PAD} L ${PAD} ${H2 - PAD} Z`} fill="url(#idxFill)" />
+          <path d={`${indexPath} L ${xAt(data.length - 1)} ${H2 - PAD} L ${PAD} ${H2 - PAD} Z`} fill="url(#idxFill)" />
           <path d={indexPath} stroke="var(--color-signal)" strokeWidth={2} fill="none" strokeLinecap="round" />
           {hover != null ? (
-            <line x1={PAD + hover * stepX} x2={PAD + hover * stepX} y1={0} y2={H2} stroke="var(--color-signal)" strokeDasharray="2 3" opacity={0.7} />
+            <line x1={xAt(hover)} x2={xAt(hover)} y1={0} y2={H2} stroke="var(--color-signal)" strokeDasharray="2 3" opacity={0.7} />
           ) : null}
         </svg>
         <div className="flex justify-between px-2 pt-1 text-[10px] text-muted-foreground" style={{ width: W }}>
