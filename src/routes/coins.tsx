@@ -16,12 +16,15 @@ export const Route = createFileRoute("/coins")({
 });
 
 function CoinsPage() {
+  const [watchlist, setWatchlist] = useState<string[]>(coins.map((c) => c.symbol));
+  const toggleWatch = (sym: string) =>
+    setWatchlist((prev) => (prev.includes(sym) ? prev.filter((s) => s !== sym) : [...prev, sym]));
   return (
     <PageShell>
       <h1 className="sr-only">自选</h1>
       <MindshareSection />
-      <DiscoverSection />
-      <WatchlistSection />
+      <WatchlistSection watchlist={watchlist} onToggle={toggleWatch} />
+      <DiscoverSection watchlist={watchlist} onToggle={toggleWatch} />
       <FooterBrand />
     </PageShell>
   );
