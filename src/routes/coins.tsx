@@ -104,39 +104,48 @@ function MindshareSection() {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-2.5 overflow-hidden rounded-xl border border-panel-border bg-background/45">
-        <table className="w-full text-left text-[11px]">
-          <thead className="text-[9.5px] uppercase tracking-wide text-muted-foreground">
-            <tr>
-              <th className="px-2.5 py-1.5 font-bold">板块</th>
-              <th className="px-2 py-1.5 font-bold">占比</th>
-              <th className="px-2 py-1.5 font-bold">24h Δ</th>
-              <th className="px-2.5 py-1.5 font-bold">好/坏名声</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sentimentRows.map((r) => (
-              <tr key={r.sector} className="border-t border-panel-border/60">
-                <td className="px-2.5 py-1.5 font-bold">{r.sector}</td>
-                <td className="px-2 py-1.5 font-mono font-black text-primary">{r.share}</td>
-                <td className={`px-2 py-1.5 font-mono font-bold ${r.deltaTone === "up" ? "text-positive" : "text-negative"}`}>{r.delta}</td>
-                <td className="px-2.5 py-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-negative/30">
-                      <div className="absolute inset-y-0 left-0 rounded-full bg-positive" style={{ width: `${r.bull}%` }} />
-                    </div>
-                    <span className="w-12 text-right font-mono text-[10px] font-bold">
-                      <span className="text-positive">{r.bull}</span>
-                      <span className="text-muted-foreground">/</span>
-                      <span className="text-negative">{100 - r.bull}</span>
-                    </span>
-                  </div>
-                </td>
+      {expanded && (
+        <div className="mt-2.5 overflow-hidden rounded-xl border border-panel-border bg-background/45">
+          <table className="w-full text-left text-[11px]">
+            <thead className="text-[9.5px] uppercase tracking-wide text-muted-foreground">
+              <tr>
+                <th className="px-2.5 py-1.5 font-bold">板块</th>
+                <th className="px-2 py-1.5 font-bold">占比</th>
+                <th className="px-2 py-1.5 font-bold">24h Δ</th>
+                <th className="px-2.5 py-1.5 font-bold">好/坏名声</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {sentimentRows.map((r) => (
+                <tr key={r.sector} className="border-t border-panel-border/60">
+                  <td className="px-2.5 py-1.5 font-bold">{r.sector}</td>
+                  <td className="px-2 py-1.5 font-mono font-black text-primary">{r.share}</td>
+                  <td className={`px-2 py-1.5 font-mono font-bold ${r.deltaTone === "up" ? "text-positive" : "text-negative"}`}>{r.delta}</td>
+                  <td className="px-2.5 py-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-negative/30">
+                        <div className="absolute inset-y-0 left-0 rounded-full bg-positive" style={{ width: `${r.bull}%` }} />
+                      </div>
+                      <span className="w-12 text-right font-mono text-[10px] font-bold">
+                        <span className="text-positive">{r.bull}</span>
+                        <span className="text-muted-foreground">/</span>
+                        <span className="text-negative">{100 - r.bull}</span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className="mt-2 flex w-full items-center justify-center gap-1 rounded-lg border border-panel-border bg-background/40 py-1 text-[10.5px] font-bold text-muted-foreground"
+      >
+        {expanded ? "收起 ▲" : "展开详情 ▼"}
+      </button>
     </section>
   );
 }
