@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageShell, CoinLink, CoinAvatar, DualSparkline, FooterBrand, coins, type Coin } from "@/components/shell";
 
@@ -15,6 +15,7 @@ function CoinsPage() {
       <h1 className="sr-only">自选</h1>
       
       <WatchlistSection watchlist={watchlist} onToggle={toggleWatch} />
+      <TradingOpportunities />
       <DiscoverSection watchlist={watchlist} onToggle={toggleWatch} />
       <FooterBrand />
     </PageShell>
