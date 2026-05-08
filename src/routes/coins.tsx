@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageShell, CoinLink, CoinAvatar, DualSparkline, FooterBrand, coins, type Coin } from "@/components/shell";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/coins")({
   head: () => ({
