@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageShell } from "@/components/shell";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/insight")({
   head: () => ({
@@ -19,6 +20,7 @@ function InsightPage() {
     <PageShell>
       <h1 className="sr-only">行情</h1>
       <AiReport />
+      <MindshareSection />
       <TradingOpportunities />
       <InsightMetrics />
     </PageShell>
