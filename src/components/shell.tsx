@@ -36,10 +36,12 @@ export const latest = [
 ];
 
 export function PageShell({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
   return (
     <main className="mx-auto min-h-screen max-w-[430px] bg-background pb-24 text-foreground shadow-2xl">
       <TopBar />
-      <div className="space-y-3.5 px-3 pb-5 pt-[92px]">{children}</div>
+      <div className={`space-y-3.5 px-3 pb-5 ${isHome ? "pt-[92px]" : "pt-[64px]"}`}>{children}</div>
       <BottomNav />
     </main>
   );
