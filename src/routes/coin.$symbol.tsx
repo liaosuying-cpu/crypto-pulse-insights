@@ -11,14 +11,6 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/coin/$symbol")({
   validateSearch: (s) => searchSchema.parse(s),
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.symbol} 单币种分析 — CryptOracle` },
-      { name: "description", content: `${params.symbol} 的市场、情绪、KOL 与因子趋势分析。` },
-      { property: "og:title", content: `${params.symbol} 单币种分析 — CryptOracle` },
-      { property: "og:description", content: "查看单币种市场、情绪与社群数据。" },
-    ],
-  }),
   component: CoinPage,
 });
 

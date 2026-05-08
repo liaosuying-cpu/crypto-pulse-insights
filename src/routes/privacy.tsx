@@ -1,12 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: "安全与隐私 — CryptOracle" },
-      { name: "description", content: "管理 CryptOracle 登录安全、隐私权限与数据保留策略。" },
-    ],
-  }),
   component: PrivacyPage,
 });
 

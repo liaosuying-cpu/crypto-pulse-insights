@@ -4,14 +4,6 @@ import { PageShell } from "@/components/shell";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/insight")({
-  head: () => ({
-    meta: [
-      { title: "行情 · CryptOracle 加密市场数据库" },
-      { name: "description", content: "AI 报告、交易机会与关键市场指标，量化决策必读。" },
-      { property: "og:title", content: "行情 · CryptOracle" },
-      { property: "og:description", content: "AI 报告、异动交易机会与关键市场指标。" },
-    ],
-  }),
   component: InsightPage,
 });
 

@@ -1,12 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/account")({
-  head: () => ({
-    meta: [
-      { title: "个人中心 — CryptOracle" },
-      { name: "description", content: "查看 CryptOracle 账户、订阅、通知与系统设置。" },
-    ],
-  }),
   component: AccountPage,
 });
 

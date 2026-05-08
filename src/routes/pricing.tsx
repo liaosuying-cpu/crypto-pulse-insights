@@ -1,12 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/pricing")({
-  head: () => ({
-    meta: [
-      { title: "订阅付费 — CryptOracle" },
-      { name: "description", content: "选择 CryptOracle 加密社群情绪数据订阅方案。" },
-    ],
-  }),
   component: PricingPage,
 });
 

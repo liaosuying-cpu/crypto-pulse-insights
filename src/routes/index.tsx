@@ -3,14 +3,6 @@ import { useMemo, useRef, useState } from "react";
 import { PageShell, CoinAvatar } from "@/components/shell";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "行情 · CryptOracle 加密市场数据库" },
-      { name: "description", content: "CO10 AIVIX、社群情绪与 KOL 讨论行情面板，辅助加密量化决策。" },
-      { property: "og:title", content: "行情 · CryptOracle" },
-      { property: "og:description", content: "CO10 AIVIX、社群情绪指数与 KOL 讨论实时面板。" },
-    ],
-  }),
   component: MarketPage,
 });
 

@@ -3,14 +3,6 @@ import { useMemo, useState } from "react";
 import { PageShell, CoinLink, CoinAvatar, DualSparkline, FooterBrand, coins, type Coin } from "@/components/shell";
 
 export const Route = createFileRoute("/coins")({
-  head: () => ({
-    meta: [
-      { title: "自选 · CryptOracle 加密市场数据库" },
-      { name: "description", content: "讨论占有率、币种发现与自选币种总览，含情绪、KOL、社区指标。" },
-      { property: "og:title", content: "自选 · CryptOracle" },
-      { property: "og:description", content: "板块讨论占有率、币种发现与自选币种多维数据面板。" },
-    ],
-  }),
   component: CoinsPage,
 });
 

@@ -1,12 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/export")({
-  head: () => ({
-    meta: [
-      { title: "数据导出 — CryptOracle" },
-      { name: "description", content: "导出 CryptOracle 币种、指标与 AI 报告数据。" },
-    ],
-  }),
   component: ExportPage,
 });
 
