@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
-import { PageShell, CoinLink, CoinAvatar, Sparkline, coins } from "@/components/shell";
+import { PageShell, CoinAvatar } from "@/components/shell";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,7 +21,7 @@ function MarketPage() {
       <NewsTicker />
       <KolQuotes />
       <AivixChart />
-      <RankingTabs />
+      <ReportsSection />
       <NewsTabs />
     </PageShell>
   );
@@ -266,123 +266,79 @@ function AivixChart() {
   );
 }
 
-/* ────────────── 币种 / KOL 排行（Tab + 滑动切换） ────────────── */
-type Tab = "coins" | "kols";
+/* ────────────── 行研机构报告栏 ────────────── */
+type Report = {
+  org: string;
+  orgTone: "primary" | "signal" | "warning" | "positive" | "negative" | "secondary";
+  title: string;
+  summary: string;
+  tag: string;
+  rating: "看多" | "看空" | "中性";
+  time: string;
+  pages: number;
+};
 
-const kolRows = [
-  { rank: 1, prev: 3, name: "Arthur", followers: "1.2M", heat: "98.4", coins: "BTC / ETH", trend: "+18.2%", tone: "up" as const, avatar: "primary" as const },
-  { rank: 2, prev: 1, name: "CL207", followers: "846K", heat: "93.1", coins: "SOL / JUP", trend: "+11.6%", tone: "up" as const, avatar: "signal" as const },
-  { rank: 3, prev: 2, name: "CryptoNova", followers: "612K", heat: "88.7", coins: "BNB / XRP", trend: "-6.4%", tone: "down" as const, avatar: "warning" as const },
-  { rank: 4, prev: 4, name: "ChainLens", followers: "508K", heat: "84.0", coins: "ETH / STRK", trend: "+4.9%", tone: "up" as const, avatar: "positive" as const },
-  { rank: 5, prev: 7, name: "MKT Pulse", followers: "476K", heat: "79.5", coins: "BTC / WIF", trend: "-3.7%", tone: "down" as const, avatar: "negative" as const },
+const REPORT_CATS = ["全部", "宏观", "板块", "项目", "链上"] as const;
+type ReportCat = (typeof REPORT_CATS)[number];
+
+const reports: (Report & { cat: ReportCat })[] = [
+  { cat: "宏观", org: "Coinbase Research", orgTone: "primary", title: "Q4 加密市场展望:降息周期下的资金再配置", summary: "降息预期叠加 ETF 持续流入,BTC 或测试 9 万美元关键阻力,ETH/BTC 汇率有望企稳。", tag: "宏观策略", rating: "看多", time: "2 小时前", pages: 24 },
+  { cat: "板块", org: "Messari", orgTone: "signal", title: "AI × Crypto 赛道深度:从算力到 Agent 的价值捕获", summary: "推理算力网络正在替代训练叙事,关注具备真实付费用户的协议。", tag: "AI 赛道", rating: "看多", time: "今日 09:30", pages: 38 },
+  { cat: "项目", org: "Galaxy Digital", orgTone: "warning", title: "Solana 生态半年报:DEX 份额突破 45%", summary: "Solana 月活地址环比 +28%,但 MEV 与拥堵问题仍是中期隐忧。", tag: "Solana", rating: "中性", time: "昨日", pages: 32 },
+  { cat: "链上", org: "Glassnode", orgTone: "positive", title: "BTC 链上数据周报:长期持有者再次进入分发期", summary: "LTH 净仓位变化指标转负,历史上对应中期回调风险上升。", tag: "链上数据", rating: "看空", time: "昨日", pages: 16 },
+  { cat: "板块", org: "Delphi Digital", orgTone: "negative", title: "Meme 板块流动性研究:轮动节奏正在变快", summary: "Meme Mindshare 占比从 22% 回落至 13%,资金正在流向 RWA 与 AI。", tag: "Meme", rating: "看空", time: "2 天前", pages: 21 },
+  { cat: "宏观", org: "Bitwise", orgTone: "secondary", title: "ETF 资金流向月报:机构配置比例持续抬升", summary: "10 家头部 ETF 累计净流入 132 亿美元,养老金账户占比首次突破 8%。", tag: "ETF", rating: "看多", time: "3 天前", pages: 18 },
 ];
 
-const coinPrev = [2, 1, 5, 3, 8];
-
-function RankShift({ rank, prev }: { rank: number; prev: number }) {
-  const diff = prev - rank;
-  if (diff === 0) return <span className="text-[9px] text-muted-foreground">—</span>;
-  const up = diff > 0;
-  return (
-    <span className={`inline-flex items-center gap-0.5 text-[9px] font-black tabular-nums ${up ? "text-positive" : "text-negative"}`}>
-      {up ? "▲" : "▼"}{Math.abs(diff)}
-    </span>
-  );
+function ratingBadge(r: Report["rating"]) {
+  if (r === "看多") return "bg-positive/15 text-positive";
+  if (r === "看空") return "bg-negative/15 text-negative";
+  return "bg-elevated text-muted-foreground";
 }
 
-function RankingTabs() {
-  const [tab, setTab] = useState<Tab>("coins");
-  const startX = useRef<number | null>(null);
-
-  const onTouchStart = (e: React.TouchEvent) => { startX.current = e.touches[0].clientX; };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (startX.current == null) return;
-    const dx = e.changedTouches[0].clientX - startX.current;
-    if (Math.abs(dx) > 50) setTab(dx < 0 ? "kols" : "coins");
-    startX.current = null;
-  };
-
+function ReportsSection() {
+  const [cat, setCat] = useState<ReportCat>("全部");
+  const list = cat === "全部" ? reports : reports.filter((r) => r.cat === cat);
   return (
-    <section className="overflow-hidden rounded-2xl border border-panel-border bg-panel shadow-panel" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-      <div className="flex items-center justify-between px-3.5 py-2.5">
-        <div className="flex gap-1 rounded-full bg-elevated p-0.5 text-[11px] font-black">
-          <button onClick={() => setTab("coins")} className={`rounded-full px-3 py-1 transition ${tab === "coins" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>币种排行</button>
-          <button onClick={() => setTab("kols")} className={`rounded-full px-3 py-1 transition ${tab === "kols" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>KOLS 排行</button>
+    <section className="overflow-hidden rounded-2xl border border-panel-border bg-panel shadow-panel">
+      <div className="flex items-center justify-between px-3.5 pb-1.5 pt-2.5">
+        <div>
+          <h2 className="text-[13px] font-black tracking-tight">行研机构报告</h2>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">来自全球头部研究机构 · 实时同步</p>
         </div>
-        <Link to={tab === "coins" ? "/coins" : "/insight"} className="text-[11px] font-bold text-primary">查看更多 →</Link>
+        <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[9.5px] font-black text-primary">{reports.length} 篇</span>
       </div>
-      <div className="border-t border-panel-border">
-        {tab === "coins" ? (
-          <table className="w-full border-separate border-spacing-0 text-left text-[12px]">
-            <thead className="text-[10px] uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-2 py-2 w-[68px]">#/热度</th>
-                <th className="px-2 py-2">币种</th>
-                <th className="px-2 py-2 text-right">价格</th>
-                <th className="px-2 py-2 w-[84px] text-right">趋势</th>
-              </tr>
-            </thead>
-            <tbody>
-              {coins.map((c, i) => (
-                <tr key={c.symbol} className="border-t border-panel-border/70">
-                  <td className="border-t border-panel-border/70 px-2 py-1.5">
-                    <div className="flex items-center gap-1">
-                      <b className="tabular-nums">{c.rank}</b>
-                      <RankShift rank={c.rank} prev={coinPrev[i]} />
-                    </div>
-                    <div className="text-[10px] font-black text-primary tabular-nums leading-tight">{c.heat}</div>
-                  </td>
-                  <td className="border-t border-panel-border/70 px-2 py-1.5">
-                    <CoinLink symbol={c.symbol} className="flex items-center gap-2">
-                      <CoinAvatar symbol={c.symbol} tone={c.avatar} />
-                      <span className="min-w-0 leading-tight">
-                        <b className="block truncate">{c.symbol}</b>
-                        <span className="block truncate text-[10px] text-muted-foreground">{c.name}</span>
-                      </span>
-                    </CoinLink>
-                  </td>
-                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right font-bold tabular-nums">{c.price}</td>
-                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right">
-                    <Sparkline className={`ml-auto h-6 w-16 ${c.tone === "up" ? "text-positive" : "text-negative"}`} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <table className="w-full border-separate border-spacing-0 text-left text-[12px]">
-            <thead className="text-[10px] uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-2 py-2 w-[68px]">#/热度</th>
-                <th className="px-2 py-2">KOL</th>
-                <th className="px-2 py-2 text-right">粉丝</th>
-                <th className="px-2 py-2 text-right">讨论</th>
-              </tr>
-            </thead>
-            <tbody>
-              {kolRows.map((k) => (
-                <tr key={k.name} className="border-t border-panel-border/70">
-                  <td className="border-t border-panel-border/70 px-2 py-1.5">
-                    <div className="flex items-center gap-1">
-                      <b className="tabular-nums">{k.rank}</b>
-                      <RankShift rank={k.rank} prev={k.prev} />
-                    </div>
-                    <div className="text-[10px] font-black text-primary tabular-nums leading-tight">{k.heat}</div>
-                  </td>
-                  <td className="border-t border-panel-border/70 px-2 py-1.5">
-                    <div className="flex items-center gap-2">
-                      <CoinAvatar symbol={k.name} tone={k.avatar} />
-                      <b className="truncate">{k.name}</b>
-                    </div>
-                  </td>
-                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right tabular-nums">{k.followers}</td>
-                  <td className="border-t border-panel-border/70 px-2 py-1.5 text-right text-[11px] text-muted-foreground">{k.coins}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <div className="thin-scrollbar flex gap-1 overflow-x-auto px-3 pb-2 text-[11px] font-black">
+        {REPORT_CATS.map((c) => (
+          <button
+            key={c}
+            onClick={() => setCat(c)}
+            className={`shrink-0 rounded-full px-2.5 py-1 transition ${cat === c ? "bg-primary text-primary-foreground" : "bg-elevated text-muted-foreground"}`}
+          >
+            {c}
+          </button>
+        ))}
       </div>
+      <ul className="divide-y divide-panel-border/70 border-t border-panel-border">
+        {list.map((r) => (
+          <li key={r.title} className="px-3.5 py-2.5">
+            <div className="flex items-center gap-2">
+              <CoinAvatar symbol={r.org} tone={r.orgTone} small />
+              <b className="truncate text-[11px] text-foreground">{r.org}</b>
+              <span className={`ml-auto shrink-0 rounded px-1.5 py-0.5 text-[9.5px] font-black ${ratingBadge(r.rating)}`}>{r.rating}</span>
+            </div>
+            <p className="mt-1.5 line-clamp-2 text-[12.5px] font-bold leading-snug text-foreground">{r.title}</p>
+            <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-muted-foreground">{r.summary}</p>
+            <div className="mt-1.5 flex items-center gap-2 text-[10px] text-muted-foreground">
+              <span className="rounded bg-elevated px-1.5 py-0.5 font-black text-primary">{r.tag}</span>
+              <span>{r.pages} 页</span>
+              <span>·</span>
+              <span>{r.time}</span>
+              <span className="ml-auto font-black text-primary">阅读 →</span>
+            </div>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
