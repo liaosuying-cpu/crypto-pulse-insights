@@ -21,7 +21,7 @@ function MarketPage() {
       <NewsTicker />
       <KolQuotes />
       <AivixChart />
-      <RankingTabs />
+      <ReportsSection />
       <NewsTabs />
     </PageShell>
   );
