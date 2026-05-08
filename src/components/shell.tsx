@@ -46,6 +46,8 @@ export function PageShell({ children }: { children: React.ReactNode }) {
 }
 
 function TopBar() {
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
   return (
     <header className="fixed left-1/2 top-0 z-30 w-full max-w-[430px] -translate-x-1/2 border-b border-panel-border bg-background/95 px-3 pb-2 pt-3 backdrop-blur-xl">
       <div className="flex items-center gap-2">
@@ -59,7 +61,7 @@ function TopBar() {
           <span className="absolute right-1.5 top-1.5 grid h-3.5 min-w-[14px] place-items-center rounded-full bg-primary px-1 text-[9px] font-black text-primary-foreground">3</span>
         </button>
       </div>
-      <LiveStatusBar />
+      {isHome ? <LiveStatusBar /> : null}
     </header>
   );
 }
