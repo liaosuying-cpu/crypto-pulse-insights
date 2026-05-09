@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { PageShell } from "@/components/shell";
+import { PageShell, CoinAvatar } from "@/components/shell";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/insight")({
@@ -20,10 +20,87 @@ function InsightPage() {
     <PageShell>
       <h1 className="sr-only">行情</h1>
       <AiReport />
+      <ReportsSection />
       <MindshareSection />
-      <TradingOpportunities />
       <InsightMetrics />
     </PageShell>
+  );
+}
+
+/* ────────────── 行研机构报告栏 ────────────── */
+type Report = {
+  org: string;
+  orgTone: "primary" | "signal" | "warning" | "positive" | "negative" | "secondary";
+  title: string;
+  summary: string;
+  tag: string;
+  rating: "看多" | "看空" | "中性";
+  time: string;
+  pages: number;
+};
+
+const REPORT_CATS = ["全部", "宏观", "板块", "项目", "链上"] as const;
+type ReportCat = (typeof REPORT_CATS)[number];
+
+const reports: (Report & { cat: ReportCat })[] = [
+  { cat: "宏观", org: "Coinbase Research", orgTone: "primary", title: "Q4 加密市场展望:降息周期下的资金再配置", summary: "降息预期叠加 ETF 持续流入,BTC 或测试 9 万美元关键阻力,ETH/BTC 汇率有望企稳。", tag: "宏观策略", rating: "看多", time: "2 小时前", pages: 24 },
+  { cat: "板块", org: "Messari", orgTone: "signal", title: "AI × Crypto 赛道深度:从算力到 Agent 的价值捕获", summary: "推理算力网络正在替代训练叙事,关注具备真实付费用户的协议。", tag: "AI 赛道", rating: "看多", time: "今日 09:30", pages: 38 },
+  { cat: "项目", org: "Galaxy Digital", orgTone: "warning", title: "Solana 生态半年报:DEX 份额突破 45%", summary: "Solana 月活地址环比 +28%,但 MEV 与拥堵问题仍是中期隐忧。", tag: "Solana", rating: "中性", time: "昨日", pages: 32 },
+  { cat: "链上", org: "Glassnode", orgTone: "positive", title: "BTC 链上数据周报:长期持有者再次进入分发期", summary: "LTH 净仓位变化指标转负,历史上对应中期回调风险上升。", tag: "链上数据", rating: "看空", time: "昨日", pages: 16 },
+  { cat: "板块", org: "Delphi Digital", orgTone: "negative", title: "Meme 板块流动性研究:轮动节奏正在变快", summary: "Meme Mindshare 占比从 22% 回落至 13%,资金正在流向 RWA 与 AI。", tag: "Meme", rating: "看空", time: "2 天前", pages: 21 },
+  { cat: "宏观", org: "Bitwise", orgTone: "secondary", title: "ETF 资金流向月报:机构配置比例持续抬升", summary: "10 家头部 ETF 累计净流入 132 亿美元,养老金账户占比首次突破 8%。", tag: "ETF", rating: "看多", time: "3 天前", pages: 18 },
+];
+
+function ratingBadge(r: Report["rating"]) {
+  if (r === "看多") return "bg-positive/15 text-positive";
+  if (r === "看空") return "bg-negative/15 text-negative";
+  return "bg-elevated text-muted-foreground";
+}
+
+function ReportsSection() {
+  const [cat, setCat] = useState<ReportCat>("全部");
+  const list = cat === "全部" ? reports : reports.filter((r) => r.cat === cat);
+  return (
+    <section className="overflow-hidden rounded-2xl border border-panel-border bg-panel shadow-panel">
+      <div className="flex items-center justify-between px-3.5 pb-1.5 pt-2.5">
+        <div>
+          <h2 className="text-[13px] font-black tracking-tight">行研机构报告</h2>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">来自全球头部研究机构 · 实时同步</p>
+        </div>
+        <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[9.5px] font-black text-primary">{reports.length} 篇</span>
+      </div>
+      <div className="thin-scrollbar flex gap-1 overflow-x-auto px-3 pb-2 text-[11px] font-black">
+        {REPORT_CATS.map((c) => (
+          <button
+            key={c}
+            onClick={() => setCat(c)}
+            className={`shrink-0 rounded-full px-2.5 py-1 transition ${cat === c ? "bg-primary text-primary-foreground" : "bg-elevated text-muted-foreground"}`}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+      <ul className="divide-y divide-panel-border/70 border-t border-panel-border">
+        {list.map((r) => (
+          <li key={r.title} className="px-3.5 py-2.5">
+            <div className="flex items-center gap-2">
+              <CoinAvatar symbol={r.org} tone={r.orgTone} small />
+              <b className="truncate text-[11px] text-foreground">{r.org}</b>
+              <span className={`ml-auto shrink-0 rounded px-1.5 py-0.5 text-[9.5px] font-black ${ratingBadge(r.rating)}`}>{r.rating}</span>
+            </div>
+            <p className="mt-1.5 line-clamp-2 text-[12.5px] font-bold leading-snug text-foreground">{r.title}</p>
+            <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-muted-foreground">{r.summary}</p>
+            <div className="mt-1.5 flex items-center gap-2 text-[10px] text-muted-foreground">
+              <span className="rounded bg-elevated px-1.5 py-0.5 font-black text-primary">{r.tag}</span>
+              <span>{r.pages} 页</span>
+              <span>·</span>
+              <span>{r.time}</span>
+              <span className="ml-auto font-black text-primary">阅读 →</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
