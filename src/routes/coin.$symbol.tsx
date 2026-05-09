@@ -6,7 +6,7 @@ import { PageShell, CoinAvatar, FooterBrand, coins, latest } from "@/components/
 const searchSchema = z.object({
   list: z.string().optional(),
   idx: z.coerce.number().optional(),
-  tab: z.enum(["data", "news"]).optional(),
+  tab: z.enum(["data"]).optional(),
 });
 
 export const Route = createFileRoute("/coin/$symbol")({
