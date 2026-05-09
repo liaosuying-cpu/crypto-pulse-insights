@@ -48,9 +48,6 @@ function CoinPage() {
   const prev = idx > 0 ? order[idx - 1] : null;
   const next = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
 
-  const tab: "data" | "news" = search.tab ?? "data";
-  const setTab = (t: "data" | "news") => navigate({ to: "/coin/$symbol", params: { symbol }, search: { ...search, tab: t }, replace: true });
-
   // swipe gesture
   const startX = useRef<number | null>(null);
   const onTouchStart = (e: React.TouchEvent) => { startX.current = e.touches[0].clientX; };
