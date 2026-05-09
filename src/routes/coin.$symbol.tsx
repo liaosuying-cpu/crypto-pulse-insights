@@ -69,22 +69,7 @@ function CoinPage() {
         {/* 顶部市场总览 */}
         <OverviewCard symbol={symbol} meta={meta} />
 
-        {/* tabs */}
-        <div className="sticky top-[88px] z-20 -mx-3 flex gap-1 border-b border-panel-border bg-background/95 px-3 pb-2 pt-1 backdrop-blur">
-          {(["data", "news"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`flex-1 rounded-lg px-2 py-1.5 text-[12px] font-bold transition ${
-                tab === t ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/50 text-muted-foreground"
-              }`}
-            >
-              {t === "data" ? "数据" : "资讯"}
-            </button>
-          ))}
-        </div>
-
-        {tab === "data" ? <DataPanel symbol={symbol} /> : <NewsPanel symbol={symbol} />}
+        <DataPanel symbol={symbol} />
 
         <FooterBrand />
       </div>
