@@ -6,7 +6,7 @@ import { PageShell, CoinAvatar, FooterBrand, coins, latest } from "@/components/
 const searchSchema = z.object({
   list: z.string().optional(),
   idx: z.coerce.number().optional(),
-  tab: z.enum(["data", "news"]).optional(),
+  tab: z.enum(["data"]).optional(),
 });
 
 export const Route = createFileRoute("/coin/$symbol")({
@@ -48,9 +48,6 @@ function CoinPage() {
   const prev = idx > 0 ? order[idx - 1] : null;
   const next = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
 
-  const tab: "data" | "news" = search.tab ?? "data";
-  const setTab = (t: "data" | "news") => navigate({ to: "/coin/$symbol", params: { symbol }, search: { ...search, tab: t }, replace: true });
-
   // swipe gesture
   const startX = useRef<number | null>(null);
   const onTouchStart = (e: React.TouchEvent) => { startX.current = e.touches[0].clientX; };
@@ -72,22 +69,7 @@ function CoinPage() {
         {/* 顶部市场总览 */}
         <OverviewCard symbol={symbol} meta={meta} />
 
-        {/* tabs */}
-        <div className="sticky top-[88px] z-20 -mx-3 flex gap-1 border-b border-panel-border bg-background/95 px-3 pb-2 pt-1 backdrop-blur">
-          {(["data", "news"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`flex-1 rounded-lg px-2 py-1.5 text-[12px] font-bold transition ${
-                tab === t ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/50 text-muted-foreground"
-              }`}
-            >
-              {t === "data" ? "数据" : "资讯"}
-            </button>
-          ))}
-        </div>
-
-        {tab === "data" ? <DataPanel symbol={symbol} /> : <NewsPanel symbol={symbol} />}
+        <DataPanel symbol={symbol} />
 
         <FooterBrand />
       </div>
@@ -106,7 +88,7 @@ function CoinSwitcher({
   order: string[];
   prev: string | null;
   next: string | null;
-  search: { list?: string; idx?: number; tab?: "data" | "news" };
+  search: { list?: string; idx?: number; tab?: "data" };
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -115,7 +97,7 @@ function CoinSwitcher({
   }, [symbol]);
 
   return (
-    <div className="sticky top-[88px] z-30 -mx-3 -mt-1 mb-1 border-b border-panel-border bg-background/95 px-2 py-1.5 backdrop-blur">
+    <div className="sticky top-[64px] z-30 -mx-3 -mt-3 mb-1 border-b border-panel-border bg-background/95 px-2 py-1.5 backdrop-blur">
       <div className="flex items-center gap-1.5">
         <Link
           to="/coin/$symbol"
@@ -438,88 +420,3 @@ function Stat({ label, v, tone }: { label: string; v: string; tone?: "pos" | "ne
   );
 }
 
-/* ============== 资讯 Panel ============== */
-const NEWS_TABS = ["推荐", "公告", "深度研报", "链上动态", "KOL 观点", "社区热议"] as const;
-type NewsTab = typeof NEWS_TABS[number];
-const NEWS_DATA: Record<NewsTab, { title: string; src: string; time: string; tag?: string }[]> = {
-  推荐: [
-    { title: "现货 ETF 单日净流入再创新高，机构买盘持续", src: "Coindesk", time: "12m", tag: "热点" },
-    { title: "链上数据显示长期持有者地址数量回升", src: "Glassnode", time: "38m" },
-    { title: "分析师：宏观流动性拐点已至，加密资产受益", src: "Bloomberg", time: "1h", tag: "深度" },
-  ],
-  公告: [
-    { title: "Binance 上线该币种永续合约 50x", src: "Binance", time: "2h" },
-    { title: "OKX 新增现货交易对", src: "OKX", time: "5h" },
-  ],
-  深度研报: [
-    { title: "估值框架更新：网络价值 / 活跃地址比", src: "Messari", time: "3h", tag: "Pro" },
-    { title: "竞争格局：与同赛道项目的指标对比", src: "Delphi Digital", time: "6h" },
-  ],
-  链上动态: [
-    { title: "鲸鱼地址过去 4 小时累计买入 $12M", src: "Whale Alert", time: "32m", tag: "Whale" },
-    { title: "前 100 地址持仓集中度环比 -0.3%", src: "Nansen", time: "1h" },
-  ],
-  "KOL 观点": [
-    { title: "@CL207：技术面突破颈线，目标位上看 $XXX", src: "Twitter", time: "18m" },
-    { title: "@Arthur_0x：注意短线获利了结风险", src: "Twitter", time: "44m" },
-  ],
-  社区热议: [
-    { title: "Reddit 热帖：关于近期开发更新的讨论", src: "r/cc", time: "1h" },
-    { title: "Discord 社区情绪指数 24h 升至 78", src: "CryptOracle", time: "2h" },
-  ],
-};
-
-function NewsPanel({ symbol: _symbol }: { symbol: string }) {
-  const [tab, setTab] = useState<NewsTab>("推荐");
-  return (
-    <div className="space-y-3">
-      <section className="rounded-2xl border border-panel-border bg-panel p-3 shadow-panel">
-        <div className="-mx-3 mb-2 overflow-x-auto px-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex gap-1">
-            {NEWS_TABS.map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[10.5px] font-bold transition ${
-                  t === tab ? "bg-primary text-primary-foreground" : "border border-panel-border bg-background/60 text-muted-foreground"
-                }`}
-              >{t}</button>
-            ))}
-          </div>
-        </div>
-
-        <ul className="divide-y divide-panel-border/60">
-          {NEWS_DATA[tab].map((n, i) => (
-            <li key={i} className="flex items-start gap-2 py-2">
-              <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md bg-elevated text-[10px] font-black text-primary">{n.src.slice(0, 2)}</span>
-              <div className="min-w-0 flex-1 leading-tight">
-                <p className="text-[12px] font-bold text-foreground">{n.title}</p>
-                <p className="mt-1 text-[9.5px] font-bold text-muted-foreground">
-                  {n.src} · {n.time}{n.tag ? <> · <span className="text-primary">{n.tag}</span></> : null}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="rounded-2xl border border-panel-border bg-panel p-3 shadow-panel">
-        <h3 className="mb-2 text-[12px] font-black tracking-tight">相关资讯快讯</h3>
-        <div className="thin-scrollbar -mx-3 flex snap-x snap-mandatory gap-2 overflow-x-auto px-3 pb-1">
-          {[
-            { title: "宏观利率会议纪要发布", time: "刚刚", tag: "宏观" },
-            { title: "ETF 持仓数据更新", time: "10m", tag: "资金" },
-            { title: "网络主网升级倒计时", time: "1h", tag: "技术" },
-            { title: "DeFi TVL 周环比 +3.2%", time: "2h", tag: "链上" },
-          ].map((n, i) => (
-            <article key={i} className="w-[200px] shrink-0 snap-start rounded-xl border border-panel-border bg-background/60 p-2.5">
-              <span className="rounded bg-primary/15 px-1.5 py-0.5 text-[9px] font-black text-primary">{n.tag}</span>
-              <p className="mt-1.5 text-[11.5px] font-bold leading-snug">{n.title}</p>
-              <p className="mt-1 text-[9.5px] font-bold text-muted-foreground">{n.time}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-}
