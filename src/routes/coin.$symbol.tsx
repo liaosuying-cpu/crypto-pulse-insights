@@ -97,7 +97,7 @@ function CoinSwitcher({
   }, [symbol]);
 
   return (
-    <div className="sticky top-[64px] z-30 -mx-3 -mt-3 mb-1 border-b border-panel-border bg-background/95 px-2 py-1.5 backdrop-blur">
+    <div className="sticky top-[64px] z-30 -mx-3 -mt-[64px] mb-1 border-b border-panel-border bg-background/95 px-2 py-1.5 backdrop-blur">
       <div className="flex items-center gap-1.5">
         <Link
           to="/coin/$symbol"
