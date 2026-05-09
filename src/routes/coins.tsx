@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageShell, CoinLink, CoinAvatar, DualSparkline, FooterBrand, coins, type Coin } from "@/components/shell";
 
@@ -23,112 +23,9 @@ function CoinsPage() {
       <h1 className="sr-only">自选</h1>
       
       <WatchlistSection watchlist={watchlist} onToggle={toggleWatch} />
-      <TradingOpportunities />
       <DiscoverSection watchlist={watchlist} onToggle={toggleWatch} />
       <FooterBrand />
     </PageShell>
-  );
-}
-
-/* ============== 交易机会 ============== */
-type TF = "1h" | "4h" | "24h" | "7d";
-
-type Opportunity = {
-  symbol: string;
-  name: string;
-  factor: string;
-  delta: number;
-  price: number;
-  priceChg: number;
-  tf: TF;
-};
-
-const ALL_OPPS: Opportunity[] = [
-  { symbol: "SOL", name: "Solana", factor: "社交热度", delta: 184, price: 198.4, priceChg: 6.2, tf: "1h" },
-  { symbol: "PEPE", name: "Pepe", factor: "KOL 提及", delta: 312, price: 0.0000123, priceChg: 18.4, tf: "1h" },
-  { symbol: "ARB", name: "Arbitrum", factor: "情绪转负", delta: -67, price: 0.78, priceChg: -4.1, tf: "1h" },
-  { symbol: "ETH", name: "Ethereum", factor: "巨鲸流入", delta: 92, price: 3420, priceChg: 2.8, tf: "4h" },
-  { symbol: "DOGE", name: "Dogecoin", factor: "社群活跃", delta: 145, price: 0.142, priceChg: 9.6, tf: "4h" },
-  { symbol: "SUI", name: "Sui", factor: "开发活跃", delta: 78, price: 1.84, priceChg: 5.1, tf: "24h" },
-  { symbol: "BTC", name: "Bitcoin", factor: "情绪反转", delta: 56, price: 68420, priceChg: 3.2, tf: "24h" },
-  { symbol: "AVAX", name: "Avalanche", factor: "热度暴跌", delta: -82, price: 28.4, priceChg: -7.4, tf: "24h" },
-  { symbol: "LINK", name: "Chainlink", factor: "KOL 看多", delta: 124, price: 14.8, priceChg: 11.2, tf: "7d" },
-  { symbol: "TON", name: "Toncoin", factor: "社群增长", delta: 218, price: 6.42, priceChg: 24.5, tf: "7d" },
-  { symbol: "OP", name: "Optimism", factor: "情绪走弱", delta: -54, price: 1.92, priceChg: -8.7, tf: "7d" },
-];
-
-const TFS: TF[] = ["1h", "4h", "24h", "7d"];
-
-function TradingOpportunities() {
-  const [tf, setTf] = useState<TF>("24h");
-  const list = ALL_OPPS.filter((o) => o.tf === tf);
-
-  return (
-    <section className="rounded-2xl border border-panel-border bg-panel p-3.5 shadow-panel">
-      <div className="mb-2.5 flex items-center justify-between">
-        <h2 className="text-base font-black tracking-tight">交易机会</h2>
-        <div className="flex gap-1 rounded-lg border border-panel-border bg-background/40 p-0.5 text-[10.5px] font-bold">
-          {TFS.map((t) => (
-            <button
-              key={t}
-              onClick={() => setTf(t)}
-              className={`rounded-md px-2 py-1 transition-colors ${
-                tf === t ? "bg-primary text-primary-foreground" : "text-muted-foreground"
-              }`}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-      </div>
-      <p className="mb-2 text-[10.5px] text-muted-foreground">{tf} 内指标出现大幅异动的币种</p>
-      <div className="divide-y divide-panel-border">
-        {list.map((o) => {
-          const up = o.delta >= 0;
-          const priceUp = o.priceChg >= 0;
-          return (
-            <Link
-              key={o.symbol + o.factor}
-              to="/coin/$symbol"
-              params={{ symbol: o.symbol }}
-              className="flex items-center gap-2.5 py-2 transition-colors hover:bg-elevated/50"
-            >
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-elevated text-[10px] font-black">
-                {o.symbol.slice(0, 2)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[12.5px] font-black">{o.symbol}</span>
-                  <span
-                    className={`rounded px-1.5 py-0.5 text-[9.5px] font-bold ${
-                      up ? "bg-positive/15 text-positive" : "bg-negative/15 text-negative"
-                    }`}
-                  >
-                    {o.factor} {up ? "↑" : "↓"}
-                    {Math.abs(o.delta)}%
-                  </span>
-                </div>
-                <div className="mt-0.5 truncate text-[10px] text-muted-foreground">{o.name}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-[11.5px] font-bold tabular-nums">${o.price.toLocaleString()}</div>
-                <div
-                  className={`text-[10px] font-bold tabular-nums ${
-                    priceUp ? "text-positive" : "text-negative"
-                  }`}
-                >
-                  {priceUp ? "+" : ""}
-                  {o.priceChg}%
-                </div>
-              </div>
-            </Link>
-          );
-        })}
-        {list.length === 0 && (
-          <div className="py-6 text-center text-[11px] text-muted-foreground">该时段暂无显著异动</div>
-        )}
-      </div>
-    </section>
   );
 }
 
