@@ -88,7 +88,7 @@ function CoinSwitcher({
   order: string[];
   prev: string | null;
   next: string | null;
-  search: { list?: string; idx?: number; tab?: "data" | "news" };
+  search: { list?: string; idx?: number; tab?: "data" };
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   useEffect(() => {
